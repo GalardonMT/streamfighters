@@ -1178,12 +1178,10 @@ const uniqueCountries = Array.from(
     const cards = document.querySelectorAll("#panel-luchadores .boxeador-card");
     cards.forEach((card) => {
       const fighterId = card.getAttribute("data-fighter-id");
-      const f = fightersData.find((item) => item.id === fighterId);
-      if (!f) return;
+      if (!fighterId) return;
 
-      // Al hacer click en la tarjeta: abrir únicamente la ficha completa / modal sin alterar el selector ni el stage
       card.addEventListener("click", () => {
-        openFighterModal(f);
+        window.location.href = `/boxeador/${fighterId}`;
       });
     });
 

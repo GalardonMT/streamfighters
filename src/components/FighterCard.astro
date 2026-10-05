@@ -13,13 +13,14 @@ interface Props {
 const { fighter, opponentName, teammateName } = Astro.props;
 ---
 
-<div 
-  class="boxeador-card group cursor-pointer" 
+<a 
+  href={`/boxeador/${fighter.id}`}
+  class="boxeador-card group cursor-pointer block text-inherit no-underline" 
   data-fighter-id={fighter.id} 
   data-nickname={(fighter.nickname || "").toLowerCase()}
   data-country={(fighter.country || "").toLowerCase()}
   data-category={(fighter.category || "").toLowerCase()}
-  title={`Clic para ver todas las características de ${fighter.nickname}`}
+  title={`Ver ficha completa de ${fighter.nickname}`}
 >
   <!-- Imagen con doble marco cuadrado + neón morado interior -->
   <div class="boxeador-img-wrapper">
@@ -127,4 +128,4 @@ const { fighter, opponentName, teammateName } = Astro.props;
       </div>
     </div>
   </div>
-</div>
+</a>

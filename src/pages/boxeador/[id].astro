@@ -1,0 +1,691 @@
+---
+// src/pages/boxeador/[id].astro
+import { fighters, fights, type Fighter, type Fight } from "../../data/eventData";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import DotGridBackground from "../../components/DotGridBackground.astro";
+import HudOverlay from "../../components/HudOverlay.astro";
+import CountryFlag from "../../components/CountryFlag.astro";
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return fighters.map((fighter, index) => {
+    const prevFighter = index > 0 ? fighters[index - 1] : fighters[fighters.length - 1];
+    const nextFighter = index < fighters.length - 1 ? fighters[index + 1] : fighters[0];
+
+    // Buscar si el boxeador participa en un combate de la cartelera
+    const fight = fights.find((f) => {
+      const isF1 = f.fighter1?.id === fighter.id;
+      const isF2 = f.fighter2?.id === fighter.id;
+      const inTeam1 = f.team1?.some((t) => t.id === fighter.id);
+      const inTeam2 = f.team2?.some((t) => t.id === fighter.id);
+      return isF1 || isF2 || inTeam1 || inTeam2;
+    }) || null;
+
+    // Buscar rivales (contrincantes)
+    let opponents: Fighter[] = [];
+    if (fight) {
+      const isCorner1 =
+        fight.fighter1?.id === fighter.id ||
+        fight.team1?.some((t) => t.id === fighter.id);
+      if (isCorner1) {
+        opponents = fight.team2 && fight.team2.length > 0 ? fight.team2 : [fight.fighter2];
+      } else {
+        opponents = fight.team1 && fight.team1.length > 0 ? fight.team1 : [fight.fighter1];
+      }
+    } else if (fighter.contrincante !== undefined && fighter.contrincante !== null) {
+      const rawOpp = Array.isArray(fighter.contrincante)
+        ? fighter.contrincante
+        : [fighter.contrincante];
+      opponents = rawOpp
+        .map((val) => {
+          const s = String(val).trim();
+          if (!isNaN(Number(s))) {
+            return fighters.find((other) => other.slotNumber === Number(s));
+          }
+          return fighters.find((other) => other.id === s || other.id === `fighter-${s}`);
+        })
+        .filter((o): o is Fighter => Boolean(o));
+    }
+
+    // Buscar compañeros de equipo
+    let teammates: Fighter[] = [];
+    if (fight) {
+      const isTeam1 = fight.team1?.some((t) => t.id === fighter.id);
+      const isTeam2 = fight.team2?.some((t) => t.id === fighter.id);
+      if (isTeam1 && fight.team1) {
+        teammates = fight.team1.filter((t) => t.id !== fighter.id);
+      } else if (isTeam2 && fight.team2) {
+        teammates = fight.team2.filter((t) => t.id !== fighter.id);
+      }
+    } else if (fighter.equipo !== undefined && fighter.equipo !== null) {
+      const rawTeam = Array.isArray(fighter.equipo)
+        ? fighter.equipo
+        : [fighter.equipo];
+      teammates = rawTeam
+        .map((val) => {
+          const s = String(val).trim();
+          if (!isNaN(Number(s))) {
+            return fighters.find((other) => other.slotNumber === Number(s));
+          }
+          return fighters.find((other) => other.id === s || other.id === `fighter-${s}`);
+        })
+        .filter((t): t is Fighter => Boolean(t));
+    }
+
+    return {
+      params: { id: fighter.id },
+      props: {
+        fighter,
+        fighterIndex: index,
+        totalFighters: fighters.length,
+        prevFighter,
+        nextFighter,
+        fight,
+        opponents,
+        teammates,
+      },
+    };
+  });
+}
+
+interface Props {
+  fighter: Fighter;
+  fighterIndex: number;
+  totalFighters: number;
+  prevFighter: Fighter;
+  nextFighter: Fighter;
+  fight: Fight | null;
+  opponents: Fighter[];
+  teammates: Fighter[];
+}
+
+const {
+  fighter,
+  prevFighter,
+  nextFighter,
+  fight,
+  opponents,
+  teammates,
+} = Astro.props;
+
+const opponentNames = opponents.map((o) => o.nickname).join(" & ");
+const teammateNames = teammates.map((t) => t.nickname).join(" & ");
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>
+      {fighter.nickname} | Ficha Oficial Boxeador Stream Fighters V
+    </title>
+    <meta
+      name="description"
+      content={`Ficha oficial y estadísticas de ${fighter.nickname} (${fighter.name || 'Boxeador'}) en Stream Fighters V. Peso: ${fighter.weight}, Altura: ${fighter.height}, País: ${fighter.country}. Evento en Coliseo MedPlus.`}
+    />
+
+    <style>
+      /* Animaciones de entrada cinematográfica para el boxeador y textos */
+      .hero-boxer-enter {
+        animation: boxerSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .hero-content-enter {
+        animation: contentFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      @keyframes boxerSlideIn {
+        0% {
+          transform: translateY(40px) scale(0.94);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes contentFadeUp {
+        0% {
+          transform: translateY(30px) scale(0.97);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-[#060A1A] text-[#EBEBF4] min-h-screen flex flex-col selection:bg-[#4236F5] selection:text-[#EBEBF4] overflow-x-hidden font-sans"
+  >
+    <!-- Background Animado Futurista con Canvas y Overlay HUD -->
+    <DotGridBackground />
+    <HudOverlay />
+
+    <!-- Barra de Navegación Oficial Superior -->
+    <Navbar currentPage="combates" />
+
+    <!-- CONTENIDO PRINCIPAL: IDENTIDAD STREAM FIGHTERS V -->
+    <main class="relative z-10 flex-grow w-full">
+      <!-- ======================================================== -->
+      <!-- 1. HERO SHOWCASE DEL BOXEADOR (FULL VIEWPORT) -->
+      <!-- ======================================================== -->
+      <section
+        class="fighter-hero relative w-full min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden select-none"
+        style="background: radial-gradient(ellipse 85% 70% at 50% 50%, rgba(66, 54, 245, 0.18) 0%, rgba(28, 17, 50, 0.5) 45%, #060A1A 100%);"
+      >
+        <!-- Línea superior e iluminación cyberpunk sutil -->
+        <div
+          class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#4236F5]/60 to-transparent"
+        >
+        </div>
+        <div
+          class="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(circle_at_center,_rgba(66,54,245,0.22)_0%,_transparent_65%)]"
+        >
+        </div>
+
+        <div
+          class="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col lg:flex-row items-center justify-between gap-8 pt-8 lg:pt-0"
+        >
+          <!-- IMAGEN GIGANTE DEL BOXEADOR (Lado Izquierdo / Centro) -->
+          <div
+            class="hero-boxer-enter relative lg:w-1/2 flex items-end justify-center h-[52vh] sm:h-[62vh] lg:h-[86vh] max-h-[920px] pointer-events-none select-none order-2 lg:order-1"
+          >
+            <!-- Resplandor circular focal detrás del boxeador -->
+            <div
+              class="absolute bottom-10 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-[#4236F5]/25 rounded-full blur-3xl pointer-events-none"
+            >
+            </div>
+
+            <img
+              src={fighter.imageTransparent || fighter.image}
+              alt={fighter.nickname}
+              class="relative z-10 h-full w-auto max-w-[85vw] lg:max-w-[44vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)]"
+              fetchpriority="high"
+            />
+
+            <!-- Gradiente base suave para sellar el corte de la imagen -->
+            <div
+              class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#060A1A] via-[#060A1A]/80 to-transparent pointer-events-none z-20"
+            >
+            </div>
+          </div>
+
+          <!-- DETALLES Y TIPOGRAFÍA DEPORTIVA TEKO (Lado Derecho) -->
+          <div
+            class="hero-content-enter lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left z-30 order-1 lg:order-2"
+          >
+            <!-- Logo Oficial y Kicker HUD -->
+            <div class="flex items-center gap-3 mb-3">
+              <img
+                src="/images/logo2.png"
+                alt="Stream Fighters V"
+                class="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_4px_16px_rgba(66,54,245,0.6)]"
+              />
+              <span
+                class="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#B58E7D] bg-[#060A1A]/80 px-3 py-1 rounded-lg border border-[#B58E7D]/30 backdrop-blur-md"
+              >
+                ROSTER OFICIAL // ATLETA SF5
+              </span>
+            </div>
+
+            <!-- País y Badge -->
+            <div class="flex items-center gap-2 mb-2">
+              <CountryFlag
+                country={fighter.country}
+                flagEmoji={fighter.flag}
+                size="md"
+              />
+              <span
+                class="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#B58E7D]"
+              >
+                {fighter.country}
+              </span>
+              <span
+                class="text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#4236F5]/30 border border-[#4236F5] text-[#EBEBF4] ml-1"
+              >
+                {fighter.badge || "CONFIRMADO"}
+              </span>
+            </div>
+
+            <!-- Nombre de Combate (Teko Tipografía Gigante) -->
+            <h1
+              class="font-display font-black uppercase text-white tracking-wider leading-[0.88] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-5xl sm:text-7xl md:text-8xl lg:text-9xl my-1"
+            >
+              {fighter.nickname}
+            </h1>
+
+            <!-- Nombre Real -->
+            <p
+              class="text-xs sm:text-sm text-[#B58E7D] uppercase tracking-[0.22em] font-bold mt-1 mb-4"
+            >
+              {fighter.name || "BOXEADOR OFICIAL STREAM FIGHTERS V"}
+            </p>
+
+            <!-- Badges de Estadísticas Clave -->
+            <div
+              class="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-2.5 mb-6"
+            >
+              <span
+                class="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#B58E7D] px-3 py-1 rounded-lg bg-[#060A1A]/90 border border-[#B58E7D]/30 shadow-md backdrop-blur-md"
+              >
+                {fighter.category}
+              </span>
+              <span
+                class="font-mono text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-white px-3 py-1 rounded-lg bg-[#1C1132] border border-[#4236F5]/50 shadow-md"
+              >
+                ⚖️ {fighter.weight}
+              </span>
+              <span
+                class="font-mono text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-white px-3 py-1 rounded-lg bg-[#1C1132] border border-[#4236F5]/50 shadow-md"
+              >
+                📏 {fighter.height}
+              </span>
+              <span
+                class="font-mono text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-white px-3 py-1 rounded-lg bg-[#1C1132] border border-[#4236F5]/50 shadow-md"
+              >
+                🎂 {fighter.age || "24 años"}
+              </span>
+            </div>
+
+            <!-- Botones de Acción Inmediata -->
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              {fight && (
+                <a
+                  href={`/combate/${fight.id}`}
+                  class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#4236F5] hover:bg-[#3428df] text-xs sm:text-sm font-black uppercase tracking-wider text-white transition-all shadow-xl shadow-[#4236F5]/25 hover:scale-105 active:scale-95 border border-[#5546FF]"
+                >
+                  <span>🥊 Ver Duelo en el Ring</span>
+                </a>
+              )}
+
+              <a
+                href="#ficha-tecnica"
+                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#1C1132] hover:bg-[#251744] text-xs sm:text-sm font-bold uppercase tracking-wider text-[#EBEBF4] border border-[#B58E7D]/30 hover:border-[#4236F5] transition-all hover:scale-105 active:scale-95"
+              >
+                <span>📊 Ver Ficha Técnica</span>
+              </a>
+
+              {fighter.socials?.kick && (
+                <a
+                  href={`https://kick.com/${fighter.socials.kick}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl bg-[#53FC18]/15 border border-[#53FC18]/50 text-[#53FC18] text-xs font-black uppercase tracking-wider hover:bg-[#53FC18] hover:text-[#060A1A] transition-all shadow-md hover:scale-105 active:scale-95"
+                  title="Ver canal en Kick"
+                >
+                  <span class="w-2 h-2 rounded-full bg-[#53FC18] animate-ping"></span>
+                  <span>KICK</span>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicador inferior de Scroll -->
+        <div
+          class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-70 hover:opacity-100 transition-opacity pointer-events-none z-20"
+        >
+          <span
+            class="text-[9px] font-mono tracking-[0.25em] uppercase text-[#B58E7D] font-bold"
+            >DESLIZA</span
+          >
+          <div
+            class="w-px h-6 bg-gradient-to-b from-[#4236F5] to-transparent animate-pulse"
+          >
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- 2. FICHA TÉCNICA OFICIAL (STREAM FIGHTERS TECH CARD) -->
+      <!-- ======================================================== -->
+      <section
+        id="ficha-tecnica"
+        class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]"
+      >
+        <div class="max-w-3xl mx-auto">
+          <!-- Encabezado de Sección Oficial -->
+          <div class="text-center mb-8 sm:mb-10">
+            <h2
+              class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none"
+            >
+              FICHA TÉCNICA DEL BOXEADOR
+            </h2>
+            <div class="w-16 h-1 bg-[#4236F5] mx-auto mt-3 rounded-full"></div>
+          </div>
+
+          <!-- Tarjeta Central de Vidrio Oscuro y Acentos Neón -->
+          <div
+            class="relative rounded-3xl bg-gradient-to-b from-[#11172e] via-[#0d1326] to-[#070c1d] border border-[#4236F5]/40 p-6 sm:p-10 shadow-2xl shadow-black/80 backdrop-blur-xl text-center overflow-hidden"
+          >
+            <!-- Brillo difuso de fondo -->
+            <div
+              class="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-[#4236F5]/15 rounded-full blur-3xl pointer-events-none"
+            >
+            </div>
+
+            <span
+              class="font-mono text-xs font-bold uppercase tracking-widest text-[#B58E7D] block mb-2"
+            >
+              DATOS DE ATLETA OFICIAL SF5
+            </span>
+
+            <h3
+              class="font-display text-4xl sm:text-6xl font-black uppercase text-white tracking-wide leading-none mb-2"
+            >
+              {fighter.nickname}
+            </h3>
+
+            <p
+              class="text-xs sm:text-sm text-[#B58E7D] font-bold uppercase tracking-wider mb-6"
+            >
+              {fighter.name ? `${fighter.name} • ` : ""}{fighter.country}
+            </p>
+
+            <!-- Distintivo de División -->
+            <div
+              class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#060A1A] border border-[#4236F5]/50 mb-8 shadow-inner"
+            >
+              <span
+                class="font-mono text-sm sm:text-base font-black text-[#EBEBF4] tracking-widest uppercase"
+              >
+                🥊 {fighter.category}
+              </span>
+            </div>
+
+            <!-- Grid de Especificaciones Técnicas -->
+            <div
+              class="border-t border-[#B58E7D]/20 pt-6 space-y-4 text-xs sm:text-sm text-left"
+            >
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >DIVISIÓN / CATEGORÍA</span
+                >
+                <span class="text-white font-bold text-right">{fighter.category}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >PESO OFICIAL</span
+                >
+                <span class="text-white font-bold text-right font-mono">{fighter.weight}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >ALTURA</span
+                >
+                <span class="text-white font-bold text-right font-mono">{fighter.height}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >EDAD</span
+                >
+                <span class="text-white font-bold text-right">{fighter.age || "24 años"}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >ALCANCE (REACH)</span
+                >
+                <span class="text-white font-bold text-right font-mono">{fighter.reach || "1.80 m"}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >GUARDIA (STANCE)</span
+                >
+                <span class="text-white font-bold text-right">{fighter.stance || "Ortodoxa"}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >RÉCORD EN BOXEO</span
+                >
+                <span class="text-white font-bold text-right">{fighter.record || "Debutante (0-0)"}</span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >PAÍS / NACIONALIDAD</span
+                >
+                <span class="text-white font-bold text-right flex items-center gap-1.5">
+                  <CountryFlag country={fighter.country} flagEmoji={fighter.flag} size="sm" />
+                  <span>{fighter.country}</span>
+                </span>
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >SEDE DEL EVENTO</span
+                >
+                <span class="text-white font-bold text-right"
+                  >Coliseo MedPlus • Bogotá, Colombia</span
+                >
+              </div>
+
+              <!-- Redes Sociales / Canales de Transmisión -->
+              <div class="flex items-center justify-between py-2">
+                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >REDES Y TRANSMISIÓN</span
+                >
+                <div class="flex items-center gap-2">
+                  {fighter.socials?.kick && (
+                    <a
+                      href={`https://kick.com/${fighter.socials.kick}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[#53FC18] font-bold text-xs hover:underline flex items-center gap-1 bg-[#53FC18]/10 border border-[#53FC18]/30 px-2 py-0.5 rounded"
+                    >
+                      <span>Kick: @{fighter.socials.kick}</span>
+                    </a>
+                  )}
+                  {fighter.socials?.instagram && (
+                    <a
+                      href={`https://instagram.com/${fighter.socials.instagram}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[#E1306C] font-bold text-xs hover:underline flex items-center gap-1 bg-[#E1306C]/10 border border-[#E1306C]/30 px-2 py-0.5 rounded"
+                    >
+                      <span>IG: @{fighter.socials.instagram}</span>
+                    </a>
+                  )}
+                  {fighter.socials?.twitch && (
+                    <a
+                      href={`https://twitch.tv/${fighter.socials.twitch}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[#9146FF] font-bold text-xs hover:underline flex items-center gap-1 bg-[#9146FF]/10 border border-[#9146FF]/30 px-2 py-0.5 rounded"
+                    >
+                      <span>Twitch: @{fighter.socials.twitch}</span>
+                    </a>
+                  )}
+                  {!fighter.socials && (
+                    <span class="text-[#B58E7D]/70 italic text-xs">Confirmado en Stream Fighters V</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- 3. DUELO ASIGNADO & CONTRINCANTE (EL COMBATE EN EL RING) -->
+      <!-- ======================================================== -->
+      {fight && (
+        <section
+          class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-gradient-to-b from-[#060A1A] via-[#090d21] to-[#060A1A]"
+        >
+          <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10 sm:mb-14">
+              <span class="text-xs sm:text-sm font-mono uppercase tracking-[0.28em] text-[#4236F5] font-bold block mb-2">
+                CARTELERA OFICIAL DE BOXEO
+              </span>
+              <h2
+                class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none"
+              >
+                COMBATE PROGRAMADO
+              </h2>
+              <p
+                class="text-xs sm:text-sm text-[#B58E7D] uppercase tracking-wider mt-2 font-semibold"
+              >
+                {fight.title} • {fight.rounds} • {fight.time}
+              </p>
+              <div class="w-16 h-1 bg-[#4236F5] mx-auto mt-3 rounded-full"></div>
+            </div>
+
+            <!-- Tarjeta Visual del Combate -->
+            <div
+              class="relative rounded-3xl bg-[#090e22] border border-[#4236F5]/40 p-6 sm:p-8 shadow-2xl overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6"
+            >
+              <!-- Info del Combate -->
+              <div class="flex-grow text-center md:text-left">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-[#B58E7D] bg-[#060A1A] px-3 py-1 rounded-md border border-[#B58E7D]/20 inline-block mb-2">
+                  {fight.tag || "DUELO OFICIAL STREAM FIGHTERS V"}
+                </span>
+                <h3 class="font-display text-3xl sm:text-4xl font-black uppercase text-white mb-1">
+                  {fight.title}
+                </h3>
+                <p class="text-xs text-[#B58E7D] font-semibold mb-4">
+                  {fight.category} • {fight.rounds} • Horario: {fight.time}
+                </p>
+
+                <!-- Rival confirmado -->
+                {opponentNames && (
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider mb-4">
+                    <span>⚔️ Rival:</span>
+                    <span class="font-black text-white">{opponentNames}</span>
+                  </div>
+                )}
+
+                <!-- Compañero de equipo -->
+                {teammateNames && (
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-950/40 border border-[#c084fc]/30 text-[#e9d5ff] text-xs font-bold uppercase tracking-wider mb-4 ml-2">
+                    <span>🤝 Equipo con:</span>
+                    <span class="font-black text-white">{teammateNames}</span>
+                  </div>
+                )}
+
+                <div>
+                  <a
+                    href={`/combate/${fight.id}`}
+                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#4236F5] hover:bg-[#3428df] text-xs font-black uppercase tracking-wider text-white transition-all shadow-md hover:scale-105 active:scale-95"
+                  >
+                    <span>Ver Ficha Completa del Combate →</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Miniaturas de Rivales / Compañeros -->
+              <div class="flex items-center gap-3 shrink-0">
+                {opponents.map((opp) => (
+                  <a
+                    href={`/boxeador/${opp.id}`}
+                    class="group/opp flex flex-col items-center p-2 rounded-2xl bg-[#060A1A] border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all hover:scale-105"
+                    title={`Ver ficha de ${opp.nickname}`}
+                  >
+                    <div class="w-20 h-24 rounded-xl overflow-hidden bg-gradient-to-b from-[#11172e] to-[#070c1d] flex items-end justify-center">
+                      <img
+                        src={opp.imageTransparent || opp.image}
+                        alt={opp.nickname}
+                        class="h-full w-auto object-contain object-bottom"
+                      />
+                    </div>
+                    <span class="font-display text-sm font-black text-white uppercase mt-1.5 truncate max-w-[90px] group-hover/opp:text-[#4236F5] transition-colors">
+                      {opp.nickname}
+                    </span>
+                    <span class="text-[9px] font-mono text-rose-400 font-bold uppercase">
+                      RIVAL
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- ======================================================== -->
+      <!-- 4. NAVEGADOR ENTRE BOXEADORES & RETORNO AL ROSTER -->
+      <!-- ======================================================== -->
+      <section
+        class="relative z-20 w-full py-12 px-4 sm:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]"
+      >
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+          <!-- Anterior -->
+          <a
+            href={`/boxeador/${prevFighter.id}`}
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group"
+          >
+            <span class="group-hover:-translate-x-1 transition-transform">
+              ←
+            </span>
+            <div class="text-left">
+              <span class="text-[9px] font-mono text-[#B58E7D] block">
+                BOXEADOR ANTERIOR
+              </span>
+              <span class="truncate max-w-[130px] sm:max-w-[180px] block font-display font-black text-base text-white">
+                {prevFighter.nickname}
+              </span>
+            </div>
+          </a>
+
+          <!-- Volver a la Lista de Peleadores -->
+          <a
+            href="/combates"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#4236F5] hover:bg-[#3428df] text-xs font-black uppercase tracking-wider text-white transition-all shadow-lg hover:scale-105 active:scale-95 border border-[#5546FF]"
+          >
+            <span>Ver Todos los Boxeadores</span>
+          </a>
+
+          <!-- Siguiente -->
+          <a
+            href={`/boxeador/${nextFighter.id}`}
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group text-right"
+          >
+            <div class="text-right">
+              <span class="text-[9px] font-mono text-[#B58E7D] block">
+                BOXEADOR SIGUIENTE
+              </span>
+              <span class="truncate max-w-[130px] sm:max-w-[180px] block font-display font-black text-base text-white">
+                {nextFighter.nickname}
+              </span>
+            </div>
+            <span class="group-hover:translate-x-1 transition-transform">
+              →
+            </span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Oficial Completo -->
+    <Footer currentPage="combates" />
+  </body>
+</html>

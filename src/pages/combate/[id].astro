@@ -24,12 +24,7 @@ export function getStaticPaths() {
   });
 }
 
-const {
-  fight,
-  totalFights,
-  prevFight,
-  nextFight,
-} = Astro.props;
+const { fight, totalFights, prevFight, nextFight } = Astro.props;
 
 const corner1Fighters =
   fight.team1 && fight.team1.length > 0 ? fight.team1 : [fight.fighter1];
@@ -126,7 +121,6 @@ function getCountryFlag(country: string): string {
 
     <!-- CONTENIDO PRINCIPAL: OCUPA TODO EL ESPACIO CON LA IDENTIDAD STREAM FIGHTERS V -->
     <main class="relative z-10 flex-grow w-full">
-      
       <!-- ======================================================== -->
       <!-- 1. HERO MATCHUP (FULL VIEWPORT - OCUPA TODO EL ESPACIO) -->
       <!-- ======================================================== -->
@@ -135,69 +129,73 @@ function getCountryFlag(country: string): string {
         style="background: radial-gradient(ellipse 85% 70% at 50% 50%, rgba(66, 54, 245, 0.15) 0%, rgba(28, 17, 50, 0.45) 45%, #060A1A 100%);"
       >
         <!-- Línea superior e iluminación sutil cyberpunk -->
-        <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#4236F5]/60 to-transparent"></div>
-        <div class="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(circle_at_center,_rgba(66,54,245,0.2)_0%,_transparent_65%)]"></div>
+        <div
+          class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#4236F5]/60 to-transparent"
+        >
+        </div>
+        <div
+          class="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(circle_at_center,_rgba(66,54,245,0.2)_0%,_transparent_65%)]"
+        >
+        </div>
 
         <!-- ESQUINA ROJA: BOXEADOR(ES) 1 (A toda la altura, desde el borde inferior izquierdo) -->
         <div
           class="hero-boxer-enter-left absolute bottom-0 left-0 sm:left-2 md:left-6 lg:left-10 flex items-end justify-center pointer-events-none select-none z-10"
         >
-          {corner1Fighters.length > 1 ? (
-            <div class="flex items-end justify-center -space-x-12 sm:-space-x-16 md:-space-x-20 overflow-visible">
-              {corner1Fighters.map((f, i) => (
-                <img
-                  src={f.imageTransparent || f.image}
-                  alt={f.nickname}
-                  class={`h-[72vh] sm:h-[80vh] md:h-[86vh] lg:h-[90vh] max-h-[950px] w-auto max-w-[44vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] ${i === 0 ? "z-20" : "z-10 opacity-95"}`}
-                  fetchpriority="high"
-                />
-              ))}
-            </div>
-          ) : (
-            <img
-              src={fight.fighter1.imageTransparent || fight.fighter1.image}
-              alt={fight.fighter1.nickname}
-              class="h-[75vh] sm:h-[82vh] md:h-[88vh] lg:h-[92vh] max-h-[960px] w-auto max-w-[46vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)]"
-              fetchpriority="high"
-            />
-          )}
+          {
+            corner1Fighters.length > 1 ? (
+              <div class="flex items-end justify-center -space-x-12 sm:-space-x-16 md:-space-x-20 overflow-visible">
+                {corner1Fighters.map((f, i) => (
+                  <img
+                    src={f.imageTransparent || f.image}
+                    alt={f.nickname}
+                    class={`h-[72vh] sm:h-[80vh] md:h-[86vh] lg:h-[90vh] max-h-[950px] w-auto max-w-[44vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] ${i === 0 ? "z-20" : "z-10 opacity-95"}`}
+                    fetchpriority="high"
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={fight.fighter1.imageTransparent || fight.fighter1.image}
+                alt={fight.fighter1.nickname}
+                class="h-[75vh] sm:h-[82vh] md:h-[88vh] lg:h-[92vh] max-h-[960px] w-auto max-w-[46vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)]"
+                fetchpriority="high"
+              />
+            )
+          }
         </div>
 
         <!-- ESQUINA AZUL: BOXEADOR(ES) 2 (A toda la altura, desde el borde inferior derecho) -->
         <div
           class="hero-boxer-enter-right absolute bottom-0 right-0 sm:right-2 md:right-6 lg:right-10 flex items-end justify-center pointer-events-none select-none z-10"
         >
-          {corner2Fighters.length > 1 ? (
-            <div class="flex items-end justify-center -space-x-12 sm:-space-x-16 md:-space-x-20 overflow-visible">
-              {corner2Fighters.map((f, i) => (
-                <img
-                  src={f.imageTransparent || f.image}
-                  alt={f.nickname}
-                  class={`h-[72vh] sm:h-[80vh] md:h-[85vh] lg:h-[90vh] max-h-[950px] w-auto max-w-[44vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] ${i === 0 ? "z-20" : "z-10 opacity-95"}`}
-                  fetchpriority="high"
-                />
-              ))}
-            </div>
-          ) : (
-            <img
-              src={fight.fighter2.imageTransparent || fight.fighter2.image}
-              alt={fight.fighter2.nickname}
-              class="h-[75vh] sm:h-[82vh] md:h-[88vh] lg:h-[92vh] max-h-[960px] w-auto max-w-[46vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)]"
-              fetchpriority="high"
-            />
-          )}
+          {
+            corner2Fighters.length > 1 ? (
+              <div class="flex items-end justify-center -space-x-12 sm:-space-x-16 md:-space-x-20 overflow-visible">
+                {corner2Fighters.map((f, i) => (
+                  <img
+                    src={f.imageTransparent || f.image}
+                    alt={f.nickname}
+                    class={`h-[72vh] sm:h-[80vh] md:h-[85vh] lg:h-[90vh] max-h-[950px] w-auto max-w-[44vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] ${i === 0 ? "z-20" : "z-10 opacity-95"}`}
+                    fetchpriority="high"
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={fight.fighter2.imageTransparent || fight.fighter2.image}
+                alt={fight.fighter2.nickname}
+                class="h-[75vh] sm:h-[82vh] md:h-[88vh] lg:h-[92vh] max-h-[960px] w-auto max-w-[46vw] object-contain object-bottom drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)]"
+                fetchpriority="high"
+              />
+            )
+          }
         </div>
 
         <!-- CONTENIDO CENTRAL: TIPOGRAFÍA DEPORTIVA TEKO (ADN STREAM FIGHTERS V) -->
-        <div class="hero-center-grow relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-2xl sm:max-w-3xl mx-auto -translate-y-2 sm:-translate-y-4">
-          
-          <!-- Kicker futurista HUD -->
-          <div class="mb-2 sm:mb-3 flex items-center gap-2">
-            <span class="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#B58E7D] bg-[#060A1A]/80 px-3 py-0.5 rounded border border-[#B58E7D]/30 backdrop-blur-md">
-              DUELO OFICIAL STREAM FIGHTERS V
-            </span>
-          </div>
-
+        <div
+          class="hero-center-grow relative z-20 flex flex-col items-center justify-center text-center px-4 max-w-2xl sm:max-w-3xl mx-auto -translate-y-2 sm:-translate-y-4"
+        >
           <!-- Logo Oficial del Evento -->
           <div class="mb-2 sm:mb-3">
             <img
@@ -237,7 +235,9 @@ function getCountryFlag(country: string): string {
           </h2>
 
           <!-- Badges de Categoría, Asaltos y Transmisión en Kick -->
-          <div class="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <div
+            class="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+          >
             <span
               class="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#B58E7D] px-3.5 py-1 rounded-lg bg-[#060A1A]/90 border border-[#B58E7D]/30 shadow-md backdrop-blur-md"
             >
@@ -249,123 +249,153 @@ function getCountryFlag(country: string): string {
             >
               {fight.rounds}
             </span>
-
-            <a
-              href="https://kick.com/westcol"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-lg bg-[#53FC18]/15 border border-[#53FC18]/50 text-[#53FC18] text-[10px] sm:text-xs font-black uppercase tracking-wider hover:bg-[#53FC18] hover:text-[#060A1A] transition-all shadow-md hover:scale-105 active:scale-95"
-              title="Ver transmisión oficial en Kick"
-            >
-              <span class="w-2 h-2 rounded-full bg-[#53FC18] animate-ping"></span>
-              <span>KICK EN VIVO</span>
-            </a>
           </div>
         </div>
 
         <!-- Indicador inferior de Scroll estilo Cyberpunk HUD -->
-        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-70 hover:opacity-100 transition-opacity pointer-events-none z-20">
-          <span class="text-[9px] font-mono tracking-[0.25em] uppercase text-[#B58E7D] font-bold">DESLIZA</span>
-          <div class="w-px h-6 bg-gradient-to-b from-[#4236F5] to-transparent animate-pulse"></div>
+        <div
+          class="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-70 hover:opacity-100 transition-opacity pointer-events-none z-20"
+        >
+          <span
+            class="text-[9px] font-mono tracking-[0.25em] uppercase text-[#B58E7D] font-bold"
+            >DESLIZA</span
+          >
+          <div
+            class="w-px h-6 bg-gradient-to-b from-[#4236F5] to-transparent animate-pulse"
+          >
+          </div>
         </div>
       </section>
 
       <!-- ======================================================== -->
       <!-- 2. INFORMACIÓN DEL COMBATE (STREAM FIGHTERS TECH CARD) -->
       <!-- ======================================================== -->
-      <section class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]">
+      <section
+        class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]"
+      >
         <div class="max-w-3xl mx-auto">
-          
           <!-- Encabezado de Sección Oficial -->
           <div class="text-center mb-8 sm:mb-10">
-            <span class="text-xs sm:text-sm font-mono uppercase tracking-[0.28em] text-[#B58E7D] font-bold block mb-2">
-              // DETALLES OFICIALES DEL ENCUENTRO
-            </span>
-            <h2 class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none">
+            <h2
+              class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none"
+            >
               INFORMACIÓN DEL COMBATE
             </h2>
             <div class="w-16 h-1 bg-[#4236F5] mx-auto mt-3 rounded-full"></div>
           </div>
 
           <!-- Tarjeta Central de Batalla con Vidrio Oscuro y Acentos Violeta Neón -->
-          <div class="relative rounded-3xl bg-gradient-to-b from-[#11172e] via-[#0d1326] to-[#070c1d] border border-[#4236F5]/40 p-6 sm:p-10 shadow-2xl shadow-black/80 backdrop-blur-xl text-center overflow-hidden">
+          <div
+            class="relative rounded-3xl bg-gradient-to-b from-[#11172e] via-[#0d1326] to-[#070c1d] border border-[#4236F5]/40 p-6 sm:p-10 shadow-2xl shadow-black/80 backdrop-blur-xl text-center overflow-hidden"
+          >
             <!-- Sutil brillo difuso de fondo -->
-            <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-[#4236F5]/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div
+              class="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-[#4236F5]/15 rounded-full blur-3xl pointer-events-none"
+            >
+            </div>
 
-            <span class="font-mono text-xs font-bold uppercase tracking-widest text-[#B58E7D] block mb-2">
+            <span
+              class="font-mono text-xs font-bold uppercase tracking-widest text-[#B58E7D] block mb-2"
+            >
               CARTELERA OFICIAL
             </span>
 
-            <h3 class="font-display text-4xl sm:text-6xl font-black uppercase text-white tracking-wide leading-none mb-2">
+            <h3
+              class="font-display text-4xl sm:text-6xl font-black uppercase text-white tracking-wide leading-none mb-2"
+            >
               {fight.title}
             </h3>
 
-            <p class="text-xs sm:text-sm text-[#B58E7D] font-bold uppercase tracking-wider mb-6">
+            <p
+              class="text-xs sm:text-sm text-[#B58E7D] font-bold uppercase tracking-wider mb-6"
+            >
               {fight.tag || `DUELO OFICIAL STREAM FIGHTERS V`}
             </p>
 
             <!-- Distintivo Central de Asaltos -->
-            <div class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#060A1A] border border-[#4236F5]/50 mb-8 shadow-inner">
-              <span class="font-mono text-sm sm:text-base font-black text-[#EBEBF4] tracking-widest uppercase">
+            <div
+              class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-[#060A1A] border border-[#4236F5]/50 mb-8 shadow-inner"
+            >
+              <span
+                class="font-mono text-sm sm:text-base font-black text-[#EBEBF4] tracking-widest uppercase"
+              >
                 🥊 {fight.rounds}
               </span>
             </div>
 
             <!-- Grid de Especificaciones Técnicas del Combate -->
-            <div class="border-t border-[#B58E7D]/20 pt-6 space-y-4 text-xs sm:text-sm text-left">
-              <div class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider">DIVISIÓN / CATEGORÍA</span>
-                <span class="text-white font-bold text-right">{fight.category}</span>
-              </div>
-
-              <div class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider">SEDE DEL EVENTO</span>
-                <span class="text-white font-bold text-right">Coliseo MedPlus • Bogotá, Colombia</span>
-              </div>
-
-              <div class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider">HORARIO ESTIMADO</span>
-                <span class="text-white font-bold text-right font-mono">{fight.time}</span>
-              </div>
-
-              <div class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider">ARBITRAJE Y REGLAS</span>
-                <span class="text-white font-bold text-right">Boxeo reglamentario • Guantes 10-12 oz</span>
-              </div>
-
-              <div class="flex items-center justify-between py-2">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider">TRANSMISIÓN MUNDIAL</span>
-                <a
-                  href="https://kick.com/westcol"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-[#53FC18] font-black uppercase tracking-wider hover:underline inline-flex items-center gap-2"
+            <div
+              class="border-t border-[#B58E7D]/20 pt-6 space-y-4 text-xs sm:text-sm text-left"
+            >
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span
+                  class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >DIVISIÓN / CATEGORÍA</span
                 >
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#53FC18] animate-ping"></span>
-                  <span>Kick.com/westcol (Gratuito 4K)</span>
-                </a>
+                <span class="text-white font-bold text-right"
+                  >{fight.category}</span
+                >
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span
+                  class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >SEDE DEL EVENTO</span
+                >
+                <span class="text-white font-bold text-right"
+                  >Coliseo MedPlus • Bogotá, Colombia</span
+                >
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span
+                  class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >HORARIO ESTIMADO</span
+                >
+                <span class="text-white font-bold text-right font-mono"
+                  >{fight.time}</span
+                >
+              </div>
+
+              <div
+                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
+              >
+                <span
+                  class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
+                  >ARBITRAJE Y REGLAS</span
+                >
+                <span class="text-white font-bold text-right"
+                  >Boxeo reglamentario • Guantes 10-12 oz</span
+                >
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       <!-- ======================================================== -->
       <!-- 3. TALE OF THE TAPE (CARA A CARA Y FICHAS TÉCNICAS) -->
       <!-- ======================================================== -->
-      <section class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-gradient-to-b from-[#060A1A] via-[#090d21] to-[#060A1A]">
+      <section
+        class="relative z-20 w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-[#B58E7D]/20 bg-gradient-to-b from-[#060A1A] via-[#090d21] to-[#060A1A]"
+      >
         <div class="max-w-4xl mx-auto">
-          
           <!-- Encabezado de Sección Oficial -->
           <div class="text-center mb-10 sm:mb-14">
-            <span class="text-xs sm:text-sm font-mono uppercase tracking-[0.28em] text-[#53FC18] font-bold block mb-2">
-              // DATOS OFICIALES DE PESAJE Y FÍSICO
-            </span>
-            <h2 class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none">
+            <h2
+              class="font-display text-4xl sm:text-6xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none"
+            >
               TALE OF THE TAPE
             </h2>
-            <p class="text-xs sm:text-sm text-[#B58E7D] uppercase tracking-wider mt-2 font-semibold">
+            <p
+              class="text-xs sm:text-sm text-[#B58E7D] uppercase tracking-wider mt-2 font-semibold"
+            >
               Comparativa técnica oficial entre boxeadores
             </p>
             <div class="w-16 h-1 bg-[#4236F5] mx-auto mt-3 rounded-full"></div>
@@ -375,177 +405,229 @@ function getCountryFlag(country: string): string {
           <div class="flex items-center justify-center gap-6 sm:gap-14 mb-12">
             <!-- Esquina Roja -->
             <div class="flex flex-col items-center">
-              <span class="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-rose-400 bg-rose-950/60 border border-rose-500/40 px-2 py-0.5 rounded mb-2">
-                RINCÓN ROJO
-              </span>
-              <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-b from-rose-500 via-[#B58E7D] to-[#4236F5] shadow-xl overflow-hidden flex items-center justify-center bg-[#070c1e] ring-2 ring-rose-500/40">
+              <div
+                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-b from-rose-500 via-[#B58E7D] to-[#4236F5] shadow-xl overflow-hidden flex items-center justify-center bg-[#070c1e] ring-2 ring-rose-500/40"
+              >
                 <img
-                  src={corner1Fighters[0]?.imageTransparent || corner1Fighters[0]?.image}
+                  src={corner1Fighters[0]?.imageTransparent ||
+                    corner1Fighters[0]?.image}
                   alt={corner1Names}
                   class="w-full h-full object-contain object-bottom"
                 />
               </div>
-              <span class="font-display text-xl sm:text-3xl font-black text-white uppercase mt-2.5 text-center max-w-[150px] leading-tight">
+              <span
+                class="font-display text-xl sm:text-3xl font-black text-white uppercase mt-2.5 text-center max-w-[150px] leading-tight"
+              >
                 {corner1Names}
               </span>
               <span class="text-xs text-[#B58E7D] mt-0.5">
-                {corner1Fighters[0]?.flag || getCountryFlag(corner1Fighters[0]?.country || "")} {corner1Fighters[0]?.country}
+                {
+                  corner1Fighters[0]?.flag ||
+                    getCountryFlag(corner1Fighters[0]?.country || "")
+                }
+                {corner1Fighters[0]?.country}
               </span>
             </div>
 
             <!-- VS Centrado -->
             <div class="flex flex-col items-center">
-              <span class="font-display text-4xl sm:text-5xl font-black text-[#4236F5] tracking-widest drop-shadow-[0_0_15px_rgba(66,54,245,0.7)]">
+              <span
+                class="font-display text-4xl sm:text-5xl font-black text-[#4236F5] tracking-widest drop-shadow-[0_0_15px_rgba(66,54,245,0.7)]"
+              >
                 VS
               </span>
             </div>
 
             <!-- Esquina Azul -->
             <div class="flex flex-col items-center">
-              <span class="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-500/40 px-2 py-0.5 rounded mb-2">
-                RINCÓN AZUL
-              </span>
-              <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-b from-cyan-400 via-[#B58E7D] to-[#4236F5] shadow-xl overflow-hidden flex items-center justify-center bg-[#070c1e] ring-2 ring-cyan-500/40">
+              <div
+                class="w-20 h-20 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-b from-cyan-400 via-[#B58E7D] to-[#4236F5] shadow-xl overflow-hidden flex items-center justify-center bg-[#070c1e] ring-2 ring-cyan-500/40"
+              >
                 <img
-                  src={corner2Fighters[0]?.imageTransparent || corner2Fighters[0]?.image}
+                  src={corner2Fighters[0]?.imageTransparent ||
+                    corner2Fighters[0]?.image}
                   alt={corner2Names}
                   class="w-full h-full object-contain object-bottom"
                 />
               </div>
-              <span class="font-display text-xl sm:text-3xl font-black text-white uppercase mt-2.5 text-center max-w-[150px] leading-tight">
+              <span
+                class="font-display text-xl sm:text-3xl font-black text-white uppercase mt-2.5 text-center max-w-[150px] leading-tight"
+              >
                 {corner2Names}
               </span>
               <span class="text-xs text-[#B58E7D] mt-0.5">
-                {corner2Fighters[0]?.flag || getCountryFlag(corner2Fighters[0]?.country || "")} {corner2Fighters[0]?.country}
+                {
+                  corner2Fighters[0]?.flag ||
+                    getCountryFlag(corner2Fighters[0]?.country || "")
+                }
+                {corner2Fighters[0]?.country}
               </span>
             </div>
           </div>
 
           <!-- TABLA COMPARATIVA STREAM FIGHTERS V -->
-          <div class="max-w-2xl mx-auto rounded-2xl bg-[#0b1026]/90 border border-[#B58E7D]/25 overflow-hidden shadow-2xl backdrop-blur-xl">
-            
+          <div
+            class="max-w-2xl mx-auto rounded-2xl bg-[#0b1026]/90 border border-[#B58E7D]/25 overflow-hidden shadow-2xl backdrop-blur-xl"
+          >
             <!-- Fila: EDAD -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center">
-              <span class="font-bold text-sm sm:text-base text-white">{corner1Fighters[0]?.age || "24 años"}</span>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">EDAD</span>
-              <span class="font-bold text-sm sm:text-base text-white">{corner2Fighters[0]?.age || "24 años"}</span>
+            <div
+              class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center"
+            >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner1Fighters[0]?.age || "24 años"}</span
+              >
+              <span
+                class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest"
+                >EDAD</span
+              >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner2Fighters[0]?.age || "24 años"}</span
+              >
             </div>
 
             <!-- Fila: PESO -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center bg-[#060A1A]/50">
-              <span class="font-bold text-sm sm:text-base text-white">{corner1Fighters[0]?.weight || "76.5 kg"}</span>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">PESO OFICIAL</span>
-              <span class="font-bold text-sm sm:text-base text-white">{corner2Fighters[0]?.weight || "76.5 kg"}</span>
+            <div
+              class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center bg-[#060A1A]/50"
+            >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner1Fighters[0]?.weight || "76.5 kg"}</span
+              >
+              <span
+                class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest"
+                >PESO OFICIAL</span
+              >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner2Fighters[0]?.weight || "76.5 kg"}</span
+              >
             </div>
 
             <!-- Fila: ALTURA -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center">
-              <span class="font-bold text-sm sm:text-base text-white">{corner1Fighters[0]?.height || "1.78 m"}</span>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">ALTURA</span>
-              <span class="font-bold text-sm sm:text-base text-white">{corner2Fighters[0]?.height || "1.78 m"}</span>
+            <div
+              class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center"
+            >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner1Fighters[0]?.height || "1.78 m"}</span
+              >
+              <span
+                class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest"
+                >ALTURA</span
+              >
+              <span class="font-bold text-sm sm:text-base text-white"
+                >{corner2Fighters[0]?.height || "1.78 m"}</span
+              >
             </div>
 
             <!-- Fila: PAÍS -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center bg-[#060A1A]/50">
+            <div
+              class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center bg-[#060A1A]/50"
+            >
               <span class="font-bold text-xs sm:text-sm text-white">
-                {corner1Fighters[0]?.flag || getCountryFlag(corner1Fighters[0]?.country || "")} {corner1Fighters[0]?.country}
+                {
+                  corner1Fighters[0]?.flag ||
+                    getCountryFlag(corner1Fighters[0]?.country || "")
+                }
+                {corner1Fighters[0]?.country}
               </span>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">PAÍS DE ORIGEN</span>
+              <span
+                class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest"
+                >PAÍS DE ORIGEN</span
+              >
               <span class="font-bold text-xs sm:text-sm text-white">
-                {corner2Fighters[0]?.flag || getCountryFlag(corner2Fighters[0]?.country || "")} {corner2Fighters[0]?.country}
+                {
+                  corner2Fighters[0]?.flag ||
+                    getCountryFlag(corner2Fighters[0]?.country || "")
+                }
+                {corner2Fighters[0]?.country}
               </span>
             </div>
 
             <!-- Fila: DIVISIÓN -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center">
-              <span class="font-bold text-xs text-white truncate px-2">{fight.category.split("(")[0].trim()}</span>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">DIVISIÓN</span>
-              <span class="font-bold text-xs text-white truncate px-2">{fight.category.split("(")[0].trim()}</span>
+            <div
+              class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 border-b border-[#B58E7D]/15 text-center"
+            >
+              <span class="font-bold text-xs text-white truncate px-2"
+                >{fight.category.split("(")[0].trim()}</span
+              >
+              <span
+                class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest"
+                >DIVISIÓN</span
+              >
+              <span class="font-bold text-xs text-white truncate px-2"
+                >{fight.category.split("(")[0].trim()}</span
+              >
             </div>
-
-            <!-- Fila: CANALES DE STREAMING (KICK) -->
-            <div class="grid grid-cols-3 items-center py-4 px-4 sm:px-8 text-center bg-[#060A1A]/50">
-              <div>
-                {corner1Fighters[0]?.socials?.kick ? (
-                  <a
-                    href={`https://kick.com/${corner1Fighters[0].socials.kick}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-[#53FC18] font-bold text-xs hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>@{corner1Fighters[0].socials.kick}</span>
-                  </a>
-                ) : (
-                  <span class="text-[#B58E7D]/60 text-xs">Confirmado</span>
-                )}
-              </div>
-              <span class="font-mono text-xs font-bold text-[#B58E7D] uppercase tracking-widest">CANAL OFICIAL</span>
-              <div>
-                {corner2Fighters[0]?.socials?.kick ? (
-                  <a
-                    href={`https://kick.com/${corner2Fighters[0].socials.kick}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-[#53FC18] font-bold text-xs hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>@{corner2Fighters[0].socials.kick}</span>
-                  </a>
-                ) : (
-                  <span class="text-[#B58E7D]/60 text-xs">Confirmado</span>
-                )}
-              </div>
-            </div>
-
           </div>
 
           <!-- Si es combate de parejas / equipos (2v2 o Fatal 4-Way) -->
-          {(corner1Fighters.length > 1 || corner2Fighters.length > 1) && (
-            <div class="mt-8 max-w-2xl mx-auto rounded-2xl bg-[#0b1026]/90 border border-[#B58E7D]/25 p-6 shadow-xl">
-              <span class="font-mono text-xs font-bold uppercase tracking-widest text-[#53FC18] block text-center mb-4">
-                // COMPAÑEROS DE EQUIPO CONFIRMADOS
-              </span>
+          {
+            (corner1Fighters.length > 1 || corner2Fighters.length > 1) && (
+              <div class="mt-8 max-w-2xl mx-auto rounded-2xl bg-[#0b1026]/90 border border-[#B58E7D]/25 p-6 shadow-xl">
+                <span class="font-mono text-xs font-bold uppercase tracking-widest text-[#fffff] block text-center mb-4">
+                  COMPAÑEROS DE EQUIPO CONFIRMADOS
+                </span>
 
-              <div class="grid grid-cols-2 gap-4 text-center">
-                {corner1Fighters[1] && (
-                  <div class="p-4 rounded-xl bg-[#060A1A]/80 border border-[#B58E7D]/20">
-                    <span class="font-display text-xl sm:text-2xl font-black text-white uppercase block leading-tight">{corner1Fighters[1].nickname}</span>
-                    <span class="text-xs text-[#B58E7D] block mt-1">{corner1Fighters[1].age || "25 años"} • {corner1Fighters[1].weight} • {corner1Fighters[1].height}</span>
-                  </div>
-                )}
-                {corner2Fighters[1] && (
-                  <div class="p-4 rounded-xl bg-[#060A1A]/80 border border-[#B58E7D]/20">
-                    <span class="font-display text-xl sm:text-2xl font-black text-white uppercase block leading-tight">{corner2Fighters[1].nickname}</span>
-                    <span class="text-xs text-[#B58E7D] block mt-1">{corner2Fighters[1].age || "25 años"} • {corner2Fighters[1].weight} • {corner2Fighters[1].height}</span>
-                  </div>
-                )}
+                <div class="grid grid-cols-2 gap-4 text-center">
+                  {corner1Fighters[1] && (
+                    <div class="p-4 rounded-xl bg-[#060A1A]/80 border border-[#B58E7D]/20">
+                      <span class="font-display text-xl sm:text-2xl font-black text-white uppercase block leading-tight">
+                        {corner1Fighters[1].nickname}
+                      </span>
+                      <span class="text-xs text-[#B58E7D] block mt-1">
+                        {corner1Fighters[1].age || "25 años"} •{" "}
+                        {corner1Fighters[1].weight} •{" "}
+                        {corner1Fighters[1].height}
+                      </span>
+                    </div>
+                  )}
+                  {corner2Fighters[1] && (
+                    <div class="p-4 rounded-xl bg-[#060A1A]/80 border border-[#B58E7D]/20">
+                      <span class="font-display text-xl sm:text-2xl font-black text-white uppercase block leading-tight">
+                        {corner2Fighters[1].nickname}
+                      </span>
+                      <span class="text-xs text-[#B58E7D] block mt-1">
+                        {corner2Fighters[1].age || "25 años"} •{" "}
+                        {corner2Fighters[1].weight} •{" "}
+                        {corner2Fighters[1].height}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-
+            )
+          }
         </div>
       </section>
 
       <!-- ======================================================== -->
       <!-- 4. NAVEGADOR ENTRE COMBATES & RETORNO A CARTELERA -->
       <!-- ======================================================== -->
-      <section class="relative z-20 w-full py-12 px-4 sm:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]">
+      <section
+        class="relative z-20 w-full py-12 px-4 sm:px-8 border-t border-[#B58E7D]/20 bg-[#060A1A]"
+      >
         <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          
           <!-- Anterior -->
-          {prevFight ? (
-            <a
-              href={`/combate/${prevFight.id}`}
-              class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group"
-            >
-              <span class="group-hover:-translate-x-1 transition-transform">←</span>
-              <div class="text-left">
-                <span class="text-[9px] font-mono text-[#B58E7D] block">COMBATE ANTERIOR</span>
-                <span class="truncate max-w-[130px] sm:max-w-[180px] block">{prevFight.title}</span>
-              </div>
-            </a>
-          ) : (
-            <div></div>
-          )}
+          {
+            prevFight ? (
+              <a
+                href={`/combate/${prevFight.id}`}
+                class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group"
+              >
+                <span class="group-hover:-translate-x-1 transition-transform">
+                  ←
+                </span>
+                <div class="text-left">
+                  <span class="text-[9px] font-mono text-[#B58E7D] block">
+                    COMBATE ANTERIOR
+                  </span>
+                  <span class="truncate max-w-[130px] sm:max-w-[180px] block">
+                    {prevFight.title}
+                  </span>
+                </div>
+              </a>
+            ) : (
+              <div />
+            )
+          }
 
           <!-- Volver a Cartelera -->
           <a
@@ -556,23 +638,30 @@ function getCountryFlag(country: string): string {
           </a>
 
           <!-- Siguiente -->
-          {nextFight ? (
-            <a
-              href={`/combate/${nextFight.id}`}
-              class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group text-right"
-            >
-              <div class="text-right">
-                <span class="text-[9px] font-mono text-[#B58E7D] block">COMBATE SIGUIENTE</span>
-                <span class="truncate max-w-[130px] sm:max-w-[180px] block">{nextFight.title}</span>
-              </div>
-              <span class="group-hover:translate-x-1 transition-transform">→</span>
-            </a>
-          ) : (
-            <div></div>
-          )}
+          {
+            nextFight ? (
+              <a
+                href={`/combate/${nextFight.id}`}
+                class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#090E22] hover:bg-[#4236F5]/30 border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all text-xs font-bold uppercase tracking-wider text-[#EBEBF4] group text-right"
+              >
+                <div class="text-right">
+                  <span class="text-[9px] font-mono text-[#B58E7D] block">
+                    COMBATE SIGUIENTE
+                  </span>
+                  <span class="truncate max-w-[130px] sm:max-w-[180px] block">
+                    {nextFight.title}
+                  </span>
+                </div>
+                <span class="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </a>
+            ) : (
+              <div />
+            )
+          }
         </div>
       </section>
-
     </main>
 
     <!-- Footer Oficial Completo -->
