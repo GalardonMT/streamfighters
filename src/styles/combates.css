@@ -1,0 +1,310 @@
+/* ============================
+   LISTA DE COMBATES (1 POR FILA) CON EXPANSIÓN SUAVE
+   ============================ */
+
+.combates-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.combate-single-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  transition:
+    opacity 0.6s ease,
+    filter 0.6s ease;
+}
+
+/* El fondo oscuro teatral que se expande hacia afuera desde el centro de la tarjeta */
+.combate-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.35);
+  width: 160vw;
+  height: 120vh;
+  max-width: 2200px;
+  max-height: 1400px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.9, 0.25, 1),
+    transform 0.7s cubic-bezier(0.2, 0.9, 0.25, 1);
+  transform-origin: center center;
+}
+
+/* Al pasar por encima o activar la tarjeta, el fondo se oscurece expandiéndose desde el centro */
+.combate-single-row:has(.combate-square-card:hover) .combate-spotlight,
+.combate-single-row.has-active .combate-spotlight {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.combate-single-row:has(.combate-square-card:hover),
+.combate-single-row.has-active {
+  z-index: 30;
+}
+
+/* Oscurecer y atenuar todas las demás tarjetas de la sección para dar foco al combate */
+.combates-list:has(.combate-square-card:hover) .combate-single-row:not(:has(.combate-square-card:hover)),
+.combates-list.has-active .combate-single-row:not(.has-active) {
+  opacity: 0.18;
+  filter: blur(0.5px) brightness(0.45);
+}
+
+.combate-square-card {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  height: 230px;
+  border-radius: 1rem;
+  overflow: hidden; /* En reposo: estrictamente contenido dentro de la tarjeta */
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  transition:
+    max-width 0.55s cubic-bezier(0.2, 0.9, 0.25, 1),
+    box-shadow 0.45s ease,
+    overflow 0s ease 0.55s;
+  will-change: max-width, box-shadow;
+}
+
+@media (min-width: 640px) {
+  .combate-square-card {
+    height: 275px;
+    max-width: 740px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .combate-square-card {
+    height: 310px;
+    max-width: 800px;
+  }
+}
+
+/* El rectángulo de fondo se extiende horizontalmente al infinito (-100vw a cada lado) */
+.combate-card-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    left 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    right 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 0.5s ease,
+    box-shadow 0.5s ease;
+  will-change: left, right;
+}
+
+/* Hover & Active: El rectángulo del fondo se extiende al infinito horizontalmente cubriendo toda la pantalla */
+.combate-square-card:hover .combate-card-bg,
+.combate-square-card.is-active .combate-card-bg {
+  left: -100vw;
+  right: -100vw;
+  border-radius: 0;
+  box-shadow:
+    0 24px 60px -10px rgba(0, 0, 0, 0.95),
+    0 12px 30px -5px rgba(0, 0, 0, 0.85);
+}
+
+/* Sombra base integrada (más corta y se extiende en sincronía continua con la carta) */
+.combate-bottom-shadow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3.5rem;
+  background: linear-gradient(
+    to top,
+    rgba(6, 10, 24, 0.95) 0%,
+    rgba(9, 13, 26, 0.8) 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 20;
+  transition:
+    left 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    right 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, right;
+}
+
+@media (min-width: 640px) {
+  .combate-bottom-shadow {
+    height: 4.25rem;
+  }
+}
+
+/* Hover & Active: La sombra inferior se extiende continuamente al infinito sin cortes abruptos */
+.combate-square-card:hover .combate-bottom-shadow,
+.combate-square-card.is-active .combate-bottom-shadow {
+  left: -100vw;
+  right: -100vw;
+}
+
+/* Hover & Active: Se ensancha suavemente hacia ambos costados con sombra oscura limpia sin resplandor de color */
+.combate-square-card:hover,
+.combate-square-card.is-active {
+  max-width: 100%;
+  overflow: visible; /* Al pasar por encima o seleccionarse se abre hacia afuera */
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.85),
+    0 12px 24px -8px rgba(0, 0, 0, 0.6);
+  z-index: 35;
+  transition:
+    max-width 0.55s cubic-bezier(0.2, 0.9, 0.25, 1),
+    box-shadow 0.45s ease,
+    overflow 0s ease 0s;
+}
+
+/* Sincronización idéntica entre :hover y .is-active en todos los elementos interiores */
+.combate-square-card:hover .combate-dark-overlay,
+.combate-square-card.is-active .combate-dark-overlay {
+  opacity: 1 !important;
+}
+
+.combate-square-card:hover .corner-fighter-box,
+.combate-square-card.is-active .corner-fighter-box {
+  width: 45% !important;
+}
+
+.combate-square-card:hover .fighter-img-1v1,
+.combate-square-card.is-active .fighter-img-1v1 {
+  transform: scale(1.15) !important;
+}
+
+@media (min-width: 640px) {
+
+  .combate-square-card:hover .fighter-img-1v1,
+  .combate-square-card.is-active .fighter-img-1v1 {
+    transform: scale(1.18) !important;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .combate-square-card:hover .fighter-img-1v1,
+  .combate-square-card.is-active .fighter-img-1v1 {
+    transform: scale(1.20) !important;
+  }
+}
+
+.combate-square-card:hover .fighter-img-multi,
+.combate-square-card.is-active .fighter-img-multi {
+  transform: scale(1.10) !important;
+}
+
+@media (min-width: 640px) {
+
+  .combate-square-card:hover .fighter-img-multi,
+  .combate-square-card.is-active .fighter-img-multi {
+    transform: scale(1.12) !important;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .combate-square-card:hover .fighter-img-multi,
+  .combate-square-card.is-active .fighter-img-multi {
+    transform: scale(1.15) !important;
+  }
+}
+
+.combate-square-card .vs-text {
+  color: #ffffff;
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.95));
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.25, 1), filter 0.3s ease;
+}
+
+.combate-square-card:hover .vs-text,
+.combate-square-card.is-active .vs-text {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  transform: scale(1.15) !important;
+  filter: drop-shadow(0 0 20px rgba(66, 54, 245, 0.8)) drop-shadow(0 4px 14px rgba(0, 0, 0, 0.95)) !important;
+}
+
+/* Nombres en reposo */
+.combate-square-card .fighter-name-text {
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  transition: font-size 0.5s cubic-bezier(0.2, 0.9, 0.25, 1), letter-spacing 0.5s ease;
+}
+
+@media (min-width: 640px) {
+  .combate-square-card .fighter-name-text {
+    font-size: 1.35rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .combate-square-card .fighter-name-text {
+    font-size: 1.55rem;
+  }
+}
+
+/* Al poner encima el mouse: NOMBRES GRANDES Y COMPLETOS */
+.combate-square-card:hover .fighter-name-text,
+.combate-square-card.is-active .fighter-name-text {
+  font-size: 1.3rem !important;
+  color: #ffffff !important;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.95);
+  max-width: 46% !important;
+}
+
+@media (min-width: 640px) {
+  .combate-square-card:hover .fighter-name-text,
+  .combate-square-card.is-active .fighter-name-text {
+    font-size: 1.55rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .combate-square-card:hover .fighter-name-text,
+  .combate-square-card.is-active .fighter-name-text {
+    font-size: 1.85rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .combate-square-card:hover .fighter-name-text,
+  .combate-square-card.is-active .fighter-name-text {
+    font-size: 2.05rem !important;
+  }
+}
+
+/* Legacy */
+.combate-card {
+  background-color: #1C1132;
+  border: 1px solid rgba(181, 142, 125, 0.3);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.combate-card:hover {
+  border-color: #4236F5;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+}
+
+.combate-card-main {
+  border-color: #4236F5;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.7);
+}

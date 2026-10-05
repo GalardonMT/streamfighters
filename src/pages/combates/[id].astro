@@ -1,0 +1,8 @@
+---
+// src/pages/combates/[id].astro
+import CombatePage, { getStaticPaths as combatePaths } from "../combate/[id].astro";
+
+export const getStaticPaths = combatePaths;
+---
+
+<CombatePage {...Astro.props} />

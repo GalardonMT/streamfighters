@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Teko:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-deep-black: #060A1A;
+    --color-dark-purple: #1C1132;
+    --color-silver-white: #EBEBF4;
+    --color-neon-violet: #4236F5;
+    --color-warm-beige: #B58E7D;
+  }
+
+  body {
+    background-color: #060A1A;
+    color: #EBEBF4;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%,
+        transparent 40%,
+        rgba(4, 6, 18, 0.55) 100%);
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: 'Teko', sans-serif;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Custom clean scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1C1132;
+  border-radius: 4px;
+  border: 1px solid rgba(181, 142, 125, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4236F5;
+}
+
+/* Interactive Section Tab Switcher */
+.tab-btn {
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.tab-btn.tab-active {
+  color: #EBEBF4;
+  border-bottom-color: #4236F5;
+}
+
+.tab-btn.tab-active .tab-count {
+  display: inline-flex;
+}
+
+.tab-btn:not(.tab-active) {
+  color: #B58E7D;
+  border-bottom-color: transparent;
+}
+
+.tab-btn:not(.tab-active) .tab-count {
+  display: none !important;
+}
+
+.tab-btn:not(.tab-active):hover {
+  color: #FFFFFF;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}

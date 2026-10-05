@@ -1,0 +1,54 @@
+---
+// src/components/Artistas.astro
+import ArtistCard from './ArtistCard.astro';
+import { artists } from '../data/eventData';
+import '../styles/artistas.css';
+---
+
+<section id="panel-artistas" class="tab-panel hidden transition-opacity duration-300">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-[#B58E7D]/20 gap-4">
+    <div>
+      <span class="text-xs uppercase font-extrabold tracking-widest text-[#4236F5] block mb-1">
+        Line-up Musical
+      </span>
+      <h2 class="font-display text-4xl sm:text-5xl font-extrabold text-[#EBEBF4] leading-none">
+        ARTISTAS INVITADOS
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-[#B58E7D] max-w-md">
+      Presentaciones musicales en directo entre cada combate para mantener la adrenalina al máximo durante toda la noche.
+    </p>
+  </div>
+
+  <!-- Artists Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {artists.map((artist) => (
+      <ArtistCard artist={artist} />
+    ))}
+  </div>
+
+  <!-- Musical Experience Feature Box -->
+  <div class="mt-12 p-6 sm:p-8 rounded-2xl bg-[#1C1132] border border-[#4236F5]/50 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+    <div class="flex items-center gap-5">
+      <div class="w-16 h-16 rounded-xl bg-[#4236F5] flex items-center justify-center text-3xl shadow-lg shadow-[#4236F5]/40 shrink-0">
+        🎧
+      </div>
+      <div>
+        <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-[#EBEBF4]">
+          PLAYLIST OFICIAL DE STREAM FIGHTERS V
+        </h3>
+        <p class="text-xs sm:text-sm text-[#B58E7D]">
+          Escucha las canciones de entrada de los luchadores y todos los hits de los artistas confirmados.
+        </p>
+      </div>
+    </div>
+
+    <button 
+      type="button"
+      onclick="alert('Abriendo playlist oficial en Spotify: Stream Fighters V - Noche de Boxeo')"
+      class="w-full md:w-auto bg-[#4236F5] hover:bg-[#3428df] text-[#EBEBF4] text-xs sm:text-sm font-bold uppercase tracking-wider py-3 px-6 rounded-xl shadow-lg shadow-[#4236F5]/30 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+    >
+      Escuchar en Spotify
+    </button>
+  </div>
+</section>

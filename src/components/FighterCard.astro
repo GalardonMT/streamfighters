@@ -1,0 +1,130 @@
+---
+// src/components/FighterCard.astro
+import type { Fighter } from "../data/eventData";
+import CountryFlag from "./CountryFlag.astro";
+import "../styles/boxeadores.css";
+
+interface Props {
+  fighter: Fighter;
+  opponentName?: string;
+  teammateName?: string;
+}
+
+const { fighter, opponentName, teammateName } = Astro.props;
+---
+
+<div 
+  class="boxeador-card group cursor-pointer" 
+  data-fighter-id={fighter.id} 
+  data-nickname={(fighter.nickname || "").toLowerCase()}
+  data-country={(fighter.country || "").toLowerCase()}
+  data-category={(fighter.category || "").toLowerCase()}
+  title={`Clic para ver todas las características de ${fighter.nickname}`}
+>
+  <!-- Imagen con doble marco cuadrado + neón morado interior -->
+  <div class="boxeador-img-wrapper">
+    <div class="boxeador-img-inner">
+      <img src={fighter.image} alt={fighter.nickname} loading="lazy" />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#0a0715] via-transparent to-transparent opacity-80"
+      >
+      </div>
+
+      {fighter.badge && <span class="boxeador-tag-badge">{fighter.badge}</span>}
+
+      {
+        fighter.country && (
+          <div class="boxeador-tag-country flex items-center gap-1.5">
+            <CountryFlag country={fighter.country} flagEmoji={fighter.flag} size="sm" />
+            <span class="text-[10px] font-bold text-[#EBEBF4] uppercase tracking-wider">
+              {fighter.country}
+            </span>
+          </div>
+        )
+      }
+
+      <!-- Overlay de Contrincante al hacer hover -->
+      {
+        opponentName && (
+          <div class="boxeador-card-opponent-hover opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-[#060A1A] via-[#1C1132]/95 to-transparent flex flex-col items-center justify-end text-center z-20">
+            <span class="text-[9px] uppercase font-black tracking-widest text-[#c084fc] bg-[#302050]/80 px-2 py-0.5 rounded border border-[#c084fc]/40 mb-1">
+              Rival
+            </span>
+            <span class="font-display text-sm sm:text-base font-extrabold text-[#EBEBF4] leading-tight drop-shadow">
+              VS {opponentName}
+            </span>
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Info limpia sin campos vacíos -->
+  <div class="boxeador-card-body">
+    <h3
+      class="font-display text-xl font-extrabold text-[#EBEBF4] leading-none tracking-wide group-hover:text-[#c084fc] transition-colors"
+    >
+      {fighter.nickname}
+    </h3>
+    {
+      fighter.name && (
+        <p class="text-[10px] text-[#B58E7D] uppercase tracking-widest mt-0.5 mb-2">
+          {fighter.name}
+        </p>
+      )
+    }
+
+    {
+      teammateName ? (
+        <div class="mt-2 pt-2 border-t border-[#22c55e]/25 flex items-center justify-between text-[10px]">
+          <span class="text-[#22c55e] font-bold tracking-wider uppercase text-[9px]">
+            Equipo con:
+          </span>
+          <span
+            class="text-[#86efac] font-extrabold truncate max-w-[120px]"
+            title={`Equipo con: ${teammateName}`}
+          >
+            {teammateName}
+          </span>
+        </div>
+      ) : null
+    }
+
+    {
+      opponentName ? (
+        <div class={`mt-1.5 ${teammateName ? '' : 'pt-2 border-t border-[#B58E7D]/15'} flex items-center justify-between text-[10px]`}>
+          <span class="text-[#B58E7D] font-bold tracking-wider uppercase text-[9px]">
+            Rival:
+          </span>
+          <span
+            class="text-[#c084fc] font-extrabold truncate max-w-[120px]"
+            title={`Rival: ${opponentName}`}
+          >
+            VS {opponentName}
+          </span>
+        </div>
+      ) : null
+    }
+
+    <div class="grid grid-cols-3 gap-1 text-xs mt-2.5">
+      <div class="boxeador-stat-badge">
+        <span class="text-[8px] sm:text-[9px] text-[#B58E7D] block uppercase">Edad</span>
+        <span class="font-bold text-[#EBEBF4] text-[10px] sm:text-[11px]"
+          >{fighter.age || "24 años"}</span
+        >
+      </div>
+      <div class="boxeador-stat-badge">
+        <span class="text-[8px] sm:text-[9px] text-[#B58E7D] block uppercase">Peso</span>
+        <span class="font-bold text-[#EBEBF4] text-[10px] sm:text-[11px]"
+          >{fighter.weight}</span
+        >
+      </div>
+      <div class="boxeador-stat-badge">
+        <span class="text-[8px] sm:text-[9px] text-[#B58E7D] block uppercase">Altura</span>
+        <span class="font-bold text-[#EBEBF4] text-[10px] sm:text-[11px]"
+          >{fighter.height}</span
+        >
+      </div>
+    </div>
+  </div>
+</div>

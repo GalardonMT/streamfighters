@@ -1,0 +1,102 @@
+---
+// src/components/Combates.astro
+import FightCard from "./FightCard.astro";
+import { fights } from "../data/eventData";
+import "../styles/combates.css";
+---
+
+<section
+  id="panel-combates"
+  class="tab-panel block transition-opacity duration-300 pt-6"
+>
+  <!-- Header Centrado Minimalista Inspirado en la Referencia ("COMBATES") -->
+  <div class="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+    <span
+      class="text-xs sm:text-sm font-mono uppercase tracking-[0.28em] text-[#B58E7D] font-bold block mb-2"
+    >
+      CARTELERA OFICIAL
+    </span>
+    <h2
+      class="font-display text-6xl sm:text-7xl lg:text-8xl font-black text-[#EBEBF4] tracking-tight uppercase leading-none"
+    >
+      COMBATES
+    </h2>
+    <p
+      class="mt-3 text-xs sm:text-sm text-[#B58E7D] uppercase tracking-wider font-semibold"
+    >
+      Stream Fighters V • {fights.length} Duelos de Boxeo • Coliseo MedPlus
+    </p>
+  </div>
+
+  <!-- Lista de Combates: 1 por fila, centrados y con expansión suave hacia los costados -->
+  <div class="combates-list w-full mb-16">
+    {
+      fights.map((fight, index) => (
+        <div class="combate-single-row">
+          <div class="combate-spotlight" />
+          <FightCard
+            fight={fight}
+            variant="square"
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Tráiler & Presentación Oficial en Video (Sleek Bottom Banner) -->
+  <div class="mt-12 pt-8 border-t border-[#B58E7D]/20">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span
+          class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#4236F5]/20 border border-[#4236F5]/40 text-sm"
+        >
+          🎬
+        </span>
+        <h3
+          class="font-display text-xl sm:text-2xl font-extrabold text-[#EBEBF4] tracking-wide"
+        >
+          TRÁILER & PRESENTACIÓN OFICIAL DE LOS COMBATES
+        </h3>
+      </div>
+      <a
+        href="https://www.youtube.com/watch?v=3q01x3Rv0_o"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#c084fc] hover:text-white uppercase tracking-wider transition-colors px-3 py-1 rounded-md bg-[#1C1132] border border-[#c084fc]/30 hover:border-[#c084fc]"
+      >
+        <span>YouTube</span>
+        <span>↗</span>
+      </a>
+    </div>
+
+    <!-- Contenedor del video -->
+    <div
+      class="relative w-full rounded-2xl overflow-hidden border border-[#5b21b6]/60 shadow-2xl shadow-[#4236F5]/10 bg-[#060A1A]"
+    >
+      <div class="relative w-full aspect-video">
+        <iframe
+          class="absolute inset-0 w-full h-full"
+          src="https://www.youtube-nocookie.com/embed/3q01x3Rv0_o?rel=0&modestbranding=1"
+          title="Presentación Oficial de los Combates - Stream Fighters 5"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".combate-square-card");
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const fightId = card.getAttribute("data-fight-id");
+          if (fightId) {
+            window.location.href = `/combate/${fightId}`;
+          }
+        });
+      });
+    });
+  </script>
+</section>

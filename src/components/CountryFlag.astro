@@ -1,0 +1,100 @@
+---
+// src/components/CountryFlag.astro
+// Renderiza banderas SVG vectoriales nítidas y universales (compatibles con Windows, Mac, Linux, iOS y Android)
+
+interface Props {
+  country?: string;
+  flagEmoji?: string;
+  class?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+const {
+  country = '',
+  flagEmoji = '',
+  class: className = '',
+  size = 'md'
+} = Astro.props;
+
+// Normalización de nombres de países
+const c = country.trim().toLowerCase();
+
+const sizeClasses = {
+  xs: 'w-3.5 h-2.5 rounded-[2px]',
+  sm: 'w-4 h-3 rounded-[2px]',
+  md: 'w-5 h-3.5 rounded-[3px]',
+  lg: 'w-7 h-5 rounded-[4px]',
+  xl: 'w-10 h-7 rounded-[5px]'
+};
+
+const baseClass = `inline-block object-cover shadow-sm shrink-0 border border-white/10 ${sizeClasses[size] || sizeClasses.md} ${className}`;
+---
+
+{/* Colombia */}
+{(c === 'colombia' || c === 'co' || flagEmoji === '🇨🇴') && (
+  <svg class={baseClass} viewBox="0 0 900 600" aria-label="Bandera de Colombia">
+    <rect width="900" height="300" fill="#FCD116" />
+    <rect y="300" width="900" height="150" fill="#003893" />
+    <rect y="450" width="900" height="150" fill="#CE1126" />
+  </svg>
+)}
+
+{/* República Dominicana */}
+{(c === 'republica dominicana' || c === 'república dominicana' || c === 'dominicana' || c === 'do' || flagEmoji === '🇩🇴') && (
+  <svg class={baseClass} viewBox="0 0 900 600" aria-label="Bandera de República Dominicana">
+    <rect width="900" height="600" fill="#FFFFFF" />
+    <rect width="400" height="250" fill="#002D62" />
+    <rect x="500" width="400" height="250" fill="#CE1126" />
+    <rect y="350" width="400" height="250" fill="#CE1126" />
+    <rect x="500" y="350" width="400" height="250" fill="#002D62" />
+    <rect x="400" width="100" height="600" fill="#FFFFFF" />
+    <rect y="250" width="900" height="100" fill="#FFFFFF" />
+  </svg>
+)}
+
+{/* México */}
+{(c === 'mexico' || c === 'méxico' || c === 'mx' || flagEmoji === '🇲🇽') && (
+  <svg class={baseClass} viewBox="0 0 900 600" aria-label="Bandera de México">
+    <rect width="300" height="600" fill="#006847" />
+    <rect x="300" width="300" height="600" fill="#FFFFFF" />
+    <rect x="600" width="300" height="600" fill="#CE1126" />
+    {/* Escudo simplificado central */}
+    <circle cx="450" cy="300" r="45" fill="#8B5A2B" opacity="0.8" />
+    <circle cx="450" cy="295" r="30" fill="#006847" opacity="0.6" />
+  </svg>
+)}
+
+{/* Puerto Rico */}
+{(c === 'puerto rico' || c === 'pr' || flagEmoji === '🇵🇷') && (
+  <svg class={baseClass} viewBox="0 0 900 600" aria-label="Bandera de Puerto Rico">
+    <rect width="900" height="120" fill="#ED0000" />
+    <rect y="120" width="900" height="120" fill="#FFFFFF" />
+    <rect y="240" width="900" height="120" fill="#ED0000" />
+    <rect y="360" width="900" height="120" fill="#FFFFFF" />
+    <rect y="480" width="900" height="120" fill="#ED0000" />
+    <polygon points="0,0 420,300 0,600" fill="#0050F0" />
+    {/* Estrella Blanca */}
+    <polygon points="140,210 156,260 210,260 166,290 183,340 140,310 97,340 114,290 70,260 124,260" fill="#FFFFFF" />
+  </svg>
+)}
+
+{/* China */}
+{(c === 'china' || c === 'cn' || flagEmoji === '🇨🇳') && (
+  <svg class={baseClass} viewBox="0 0 900 600" aria-label="Bandera de China">
+    <rect width="900" height="600" fill="#DE2910" />
+    {/* Estrella grande */}
+    <polygon points="150,90 168,144 225,144 179,177 197,231 150,198 103,231 121,177 75,144 132,144" fill="#FFDE00" />
+    {/* Estrellas pequeñas */}
+    <circle cx="300" cy="60" r="15" fill="#FFDE00" />
+    <circle cx="360" cy="120" r="15" fill="#FFDE00" />
+    <circle cx="360" cy="210" r="15" fill="#FFDE00" />
+    <circle cx="300" cy="270" r="15" fill="#FFDE00" />
+  </svg>
+)}
+
+{/* Incógnito / Desconocido */}
+{(c === 'incognito' || c === 'incógnito' || c === 'desconocido' || flagEmoji === '❓') && (
+  <div class={`${baseClass} bg-[#1C1132] border border-[#c084fc]/40 flex items-center justify-center text-xs font-black text-[#c084fc]`}>
+    ?
+  </div>
+)}

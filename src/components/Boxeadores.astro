@@ -1,0 +1,1303 @@
+---
+// src/components/Boxeadores.astro
+import FighterCard from "./FighterCard.astro";
+import CountryFlag from "./CountryFlag.astro";
+import { fighters, fights } from "../data/eventData";
+import { getCountryFlagSvg, COUNTRY_SVGS } from "../utils/flags";
+import "../styles/boxeadores.css";
+
+const row1 = fighters.slice(0, 12);
+const row2 = fighters.slice(12, 22);
+const confirmedFighters = fighters.filter((f) => f.revealed);
+const first = fighters[0];
+
+// Construir un mapa de rivales flexible:
+// Cada boxeador puede tener 1 o más contrincantes (array de IDs)
+const opponentMap: Record<string, string[]> = {};
+
+function addOpponentPair(idA: string, idB: string) {
+  if (!opponentMap[idA]) opponentMap[idA] = [];
+  if (!opponentMap[idB]) opponentMap[idB] = [];
+  if (!opponentMap[idA].includes(idB)) opponentMap[idA].push(idB);
+  if (!opponentMap[idB].includes(idA)) opponentMap[idB].push(idA);
+}
+
+function resolveFighterId(val: string | number): string {
+  const str = String(val).trim();
+  if (!isNaN(Number(str))) {
+    const match = fighters.find((other) => other.slotNumber === Number(str));
+    return match ? match.id : `fighter-${str}`;
+  }
+  if (str.startsWith("fighter ")) {
+    return `fighter-${str.replace("fighter ", "").trim()}`;
+  }
+  return str;
+}
+
+// 1. Añadir emparejamientos de las peleas pactadas
+fights.forEach((fight) => {
+  if (fight.fighter1?.id && fight.fighter2?.id) {
+    addOpponentPair(fight.fighter1.id, fight.fighter2.id);
+  }
+});
+
+// 2. Sobrescribir o añadir si el boxeador tiene la propiedad 'contrincante' (número, string o array)
+fighters.forEach((f) => {
+  if (
+    f.contrincante !== undefined &&
+    f.contrincante !== null &&
+    f.contrincante !== ""
+  ) {
+    const rawList = Array.isArray(f.contrincante)
+      ? f.contrincante
+      : [f.contrincante];
+    const targets = rawList.map(resolveFighterId).filter(Boolean);
+    opponentMap[f.id] = targets;
+  }
+});
+
+// 3. Crear mapa con los nombres legibles de los contrincantes para mostrar en hover y en stage
+const fighterLookup = new Map(fighters.map((f) => [f.id, f]));
+
+const opponentNamesMap: Record<string, string> = {};
+fighters.forEach((f) => {
+  const oppIds = opponentMap[f.id] || [];
+  if (oppIds.length > 0) {
+    const names = oppIds
+      .map((id) => fighterLookup.get(id)?.nickname || id)
+      .join(" & ");
+    opponentNamesMap[f.id] = names;
+  } else {
+    opponentNamesMap[f.id] = "";
+  }
+});
+
+// 4. Crear mapa de compañeros de equipo (equipo)
+const teammateMap: Record<string, string[]> = {};
+fighters.forEach((f) => {
+  if (f.equipo !== undefined && f.equipo !== null && f.equipo !== "") {
+    const rawList = Array.isArray(f.equipo) ? f.equipo : [f.equipo];
+    const targets = rawList.map(resolveFighterId).filter(Boolean);
+    teammateMap[f.id] = targets;
+  }
+});
+
+const teammateNamesMap: Record<string, string> = {};
+fighters.forEach((f) => {
+  const teamIds = teammateMap[f.id] || [];
+  if (teamIds.length > 0) {
+    const names = teamIds
+      .map((id) => fighterLookup.get(id)?.nickname || id)
+      .join(" & ");
+    teammateNamesMap[f.id] = names;
+  } else {
+    teammateNamesMap[f.id] = "";
+  }
+});
+
+// Extraer países únicos de los peleadores confirmados para los filtros rápidos
+const uniqueCountries = Array.from(
+  new Set(confirmedFighters.map((f) => f.country).filter(Boolean)),
+);
+---
+
+<section id="panel-luchadores" class="tab-panel hidden">
+  <!-- HEADER -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-4 border-b border-[#B58E7D]/20 gap-4"
+  >
+    <div>
+      <span
+        class="text-xs uppercase font-extrabold tracking-widest text-[#4236F5] block mb-1"
+      >
+        Roster Oficial
+      </span>
+      <h2
+        class="font-display text-4xl sm:text-5xl font-extrabold text-[#EBEBF4] leading-none"
+      >
+        SELECCIONA TU BOXEADOR
+      </h2>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-[#B58E7D]">
+      <span
+        ><strong class="text-[#EBEBF4]">{confirmedFighters.length}</strong> Boxeadores</span
+      >
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL: Stage arriba + Grid abajo -->
+  <div class="roster-wrapper border border-[#302050] mb-12">
+    <!-- ========== STAGE SUPERIOR ========== -->
+    <div class="stage-area" id="stage-area-container">
+      <!-- Cinta / Marca de Agua Tipográfica Infinita en Constante Movimiento -->
+      <div id="stage-watermark-conveyor" class="stage-watermark-conveyor">
+        <div class="watermark-track">
+          <span class="watermark-item" id="wm-item-1"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-2"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-3"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-4"
+            >{first.nickname || first.country}</span
+          >
+        </div>
+        <div class="watermark-track" aria-hidden="true">
+          <span class="watermark-item" id="wm-item-5"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-6"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-7"
+            >{first.nickname || first.country}</span
+          >
+          <span class="watermark-item" id="wm-item-8"
+            >{first.nickname || first.country}</span
+          >
+        </div>
+      </div>
+
+      <!-- Flash momentáneo de impacto estilo Fighting Game -->
+      <div id="stage-impact-flash" class="stage-impact-flash"></div>
+
+      <!-- IZQUIERDA: Nombre + Stats limpias con efecto Stagger -->
+      <div class="stage-stats" id="stage-stats-container">
+        <div class="stagger-item">
+          <div id="stage-nickname" class="stage-stat-name">
+            {first.nickname}
+          </div>
+          <div
+            id="stage-name"
+            class="text-xs text-[#B58E7D] font-medium mb-3 uppercase tracking-widest"
+            style={first.name ? "" : "display:none;"}
+          >
+            {first.name}
+          </div>
+        </div>
+
+        <div class="stage-stat-row stagger-item">
+          <span class="stage-stat-label">Edad</span>
+          <span id="stage-age" class="stage-stat-value">{first.age || "24 años"}</span>
+        </div>
+        <div class="stage-stat-row stagger-item">
+          <span class="stage-stat-label">Peso</span>
+          <span id="stage-weight" class="stage-stat-value">{first.weight}</span>
+        </div>
+        <div class="stage-stat-row stagger-item">
+          <span class="stage-stat-label">Altura</span>
+          <span id="stage-height" class="stage-stat-value">{first.height}</span>
+        </div>
+        <div class="stage-stat-row stagger-item">
+          <span class="stage-stat-label">Categoría</span>
+          <span
+            id="stage-category"
+            class="stage-stat-value text-xs text-[#B58E7D]"
+            >{first.category}</span
+          >
+        </div>
+
+        <!-- Fila de Compañero de Equipo en el Stage -->
+        <div
+          id="stage-teammate-row"
+          class="stage-stat-row stagger-item border-t border-[#ffd6e0]/30 pt-2 mt-2"
+          style={teammateNamesMap[first.id] ? "" : "display:none;"}
+        >
+          <span class="stage-stat-label text-[#ffd6e0] font-black"
+            >Equipo con</span
+          >
+          <span
+            id="stage-teammate"
+            class="stage-stat-value text-xs text-[#fff1f5] font-extrabold"
+            >{teammateNamesMap[first.id] || "—"}</span
+          >
+        </div>
+
+        <!-- Fila de Contrincante en el Stage -->
+        <div
+          id="stage-opponent-row"
+          class="stage-stat-row stagger-item border-t border-[#c084fc]/30 pt-2 mt-1"
+          style={opponentNamesMap[first.id] ? "" : "display:none;"}
+        >
+          <span class="stage-stat-label text-[#c084fc] font-black"
+            >Contrincante</span
+          >
+          <span
+            id="stage-opponent"
+            class="stage-stat-value text-xs text-[#c084fc] font-extrabold"
+            >{
+              opponentNamesMap[first.id]
+                ? `VS ${opponentNamesMap[first.id]}`
+                : "—"
+            }</span
+          >
+        </div>
+      </div>
+
+      <!-- CENTRO: PNG del personaje con presencia fighting game + modo expandido full-view -->
+      <div
+        class="stage-character group/char cursor-pointer"
+        id="stage-character-btn"
+        title="Haz clic para expandir la foto completa del boxeador"
+      >
+        <div class="stage-char-glow"></div>
+        <img
+          id="stage-img"
+          src={first.imageTransparent || first.image}
+          alt={first.nickname}
+          data-fallback={first.image}
+          onerror="if(this.src!=this.dataset.fallback){this.src=this.dataset.fallback;}"
+        />
+        <div
+          id="stage-mystery-char"
+          class="stage-character-mystery"
+          style="display:none;"
+        >
+          <span class="stage-mystery-big-q">?</span>
+        </div>
+
+        <!-- Botón para volver al selector de boxeadores (aparece únicamente al expandir) -->
+        <button
+          type="button"
+          id="stage-collapse-btn"
+          class="stage-action-btn collapse-btn"
+          style="display: none;"
+          title="Volver al selector de boxeadores"
+        >
+          <span>✕ Volver al Selector</span>
+        </button>
+      </div>
+
+      <!-- DERECHA: País + Badge con animación -->
+      <div class="stage-info" id="stage-info-container">
+        <span
+          id="stage-badge"
+          class="stage-badge"
+          style={first.badge ? "" : "display:none;"}
+          >{first.badge || "CONFIRMADO"}</span
+        >
+        <div
+          id="stage-flag"
+          class="stage-flag"
+          style={first.flag ? "" : "display:none;"}
+        >
+          <CountryFlag
+            country={first.country}
+            flagEmoji={first.flag}
+            size="lg"
+          />
+        </div>
+        <div id="stage-country" class="stage-country-name">{first.country}</div>
+      </div>
+    </div>
+
+    <!-- Barra separadora con brillo neón -->
+    <div class="stage-base"></div>
+
+    <!-- ========== PANEL INFERIOR: CUADRÍCULA DE 22 CASILLAS ========== -->
+    <div class="roster-panel" id="roster-panel-container">
+      <div class="roster-scroll">
+        <!-- Fila 1: 12 slots (7 confirmados + 5 ocultos) -->
+        <div class="roster-row mb-1">
+          {
+            row1.map((f, idx) => {
+              const oppName = opponentNamesMap[f.id];
+              const slotTitle = f.revealed
+                ? oppName
+                  ? `${f.nickname} (Rival: VS ${oppName})`
+                  : f.nickname
+                : "???";
+              return (
+                <div
+                  class="roster-slot"
+                  data-slot-index={idx}
+                  data-fighter-id={f.id}
+                  title={slotTitle}
+                >
+                  <div class="roster-slot-inner">
+                    {f.revealed ? (
+                      <img
+                        src={f.image}
+                        alt={f.nickname}
+                        class="roster-slot-img"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="slot-mystery">
+                        <span class="slot-mystery-wm">5</span>
+                        <span class="slot-mystery-q">?</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+
+        <!-- Fila 2: 10 slots (13 a 22) -->
+        <div class="roster-row">
+          {
+            row2.map((f, idx) => {
+              const oppName = opponentNamesMap[f.id];
+              const slotTitle = f.revealed
+                ? oppName
+                  ? `${f.nickname} (Rival: VS ${oppName})`
+                  : f.nickname
+                : "???";
+              return (
+                <div
+                  class="roster-slot"
+                  data-slot-index={idx + 12}
+                  data-fighter-id={f.id}
+                  title={slotTitle}
+                >
+                  <div class="roster-slot-inner">
+                    {f.revealed ? (
+                      <img
+                        src={f.image}
+                        alt={f.nickname}
+                        class="roster-slot-img"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="slot-mystery">
+                        <span class="slot-mystery-wm">5</span>
+                        <span class="slot-mystery-q">?</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FICHAS DE PELEADORES CONFIRMADOS -->
+  <div>
+    <!-- BARRA DE TÍTULO Y FILTROS FIJA (ESTRUCTURA DE UNA SOLA LÍNEA ALINEADA) -->
+    <div
+      class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 pb-4 border-b border-[#B58E7D]/20 gap-4"
+    >
+      <!-- Izquierda: Título + Contador fijo sin variar ancho -->
+      <div class="flex items-center gap-3 shrink-0">
+        <h3
+          class="font-display text-2xl sm:text-3xl font-extrabold text-[#EBEBF4] tracking-wide"
+        >
+          PELEADORES
+        </h3>
+        <span
+          id="fighters-filter-count"
+          class="text-xs bg-[#1C1132] border border-[#c084fc]/40 text-[#c084fc] font-black px-2.5 py-0.5 rounded-full whitespace-nowrap min-w-[95px] text-center"
+        >
+          {confirmedFighters.length} peleadores
+        </span>
+      </div>
+
+      <!-- Derecha: Buscador + Carrusel de países con flechas de desplazamiento -->
+      <div class="flex items-center gap-3 min-w-0 max-w-full overflow-hidden">
+        <!-- Buscador con ancho fijo que no empuja los filtros -->
+        <div class="relative w-[190px] sm:w-[220px] shrink-0">
+          <input
+            type="text"
+            id="fighter-search-input"
+            placeholder="Buscar por nombre o país..."
+            class="w-full bg-[#0d091e] text-[#EBEBF4] text-xs font-semibold placeholder-[#B58E7D]/60 pl-8 pr-3 py-1.5 rounded-lg border border-[#B58E7D]/30 focus:border-[#c084fc] focus:outline-none transition-colors"
+          />
+          <span
+            class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[#B58E7D]"
+          >
+            🔍
+          </span>
+        </div>
+
+        <!-- Carrusel de Filtros de Países con flechas izquierda y derecha -->
+        <div class="fighters-filter-carousel min-w-0">
+          <!-- Flecha Izquierda -->
+          <button
+            type="button"
+            id="filter-scroll-left-btn"
+            class="filter-carousel-nav-btn"
+            title="Ver países anteriores"
+            aria-label="Ver países anteriores"
+          >
+            ‹
+          </button>
+
+          <!-- Contenedor scroll horizontal de botones -->
+          <div
+            class="fighters-filter-scroll-container"
+            id="fighter-country-filters"
+          >
+            <button
+              type="button"
+              class="fighter-filter-btn active"
+              data-filter-country="all"
+            >
+              TODOS
+            </button>
+            {
+              uniqueCountries.map((country) => (
+                <button
+                  type="button"
+                  class="fighter-filter-btn flex items-center gap-1.5"
+                  data-filter-country={country.toLowerCase()}
+                >
+                  <CountryFlag country={country} size="xs" />
+                  <span>{country.toUpperCase()}</span>
+                </button>
+              ))
+            }
+          </div>
+
+          <!-- Flecha Derecha -->
+          <button
+            type="button"
+            id="filter-scroll-right-btn"
+            class="filter-carousel-nav-btn"
+            title="Ver más países"
+            aria-label="Ver más países"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados tras filtrar -->
+    <div
+      id="no-fighters-found"
+      class="hidden text-center py-12 px-4 rounded-2xl bg-[#0d091e] border border-[#B58E7D]/20 mb-6"
+    >
+      <span class="text-3xl block mb-2">🥊</span>
+      <p class="font-display text-xl font-bold text-[#EBEBF4]">
+        No se encontraron peleadores
+      </p>
+      <p class="text-xs text-[#B58E7D] mt-1">
+        Intenta con otro término de búsqueda o limpia el filtro.
+      </p>
+    </div>
+
+    <!-- Grid de tarjetas de boxeadores -->
+    <div
+      id="fighters-cards-grid"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 justify-center"
+    >
+      {
+        confirmedFighters.map((fighter) => (
+          <FighterCard
+            fighter={fighter}
+            opponentName={opponentNamesMap[fighter.id]}
+            teammateName={teammateNamesMap[fighter.id]}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- MODAL CON CARACTERÍSTICAS COMPLETAS DEL BOXEADOR -->
+  <dialog id="fighter-detail-modal" class="fighter-detail-modal">
+    <div class="fighter-modal-grid-bg p-6 sm:p-8 relative">
+      <!-- Botón cerrar modal -->
+      <button
+        type="button"
+        id="fighter-modal-close-btn"
+        class="absolute top-4 right-4 text-[#B58E7D] hover:text-[#EBEBF4] text-2xl font-black w-9 h-9 rounded-full bg-[#1C1132] border border-[#B58E7D]/30 flex items-center justify-center cursor-pointer transition-colors z-30"
+      >
+        ✕
+      </button>
+
+      <!-- Contenido de la Ficha Técnica -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        <!-- Foto / Render del Boxeador -->
+        <div
+          class="md:col-span-5 flex flex-col items-center justify-center relative"
+        >
+          <div
+            class="relative w-full max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden border-2 border-[#5b21b6] shadow-2xl bg-[#060A1A]"
+          >
+            <img
+              id="modal-fighter-img"
+              src={first.image}
+              alt={first.nickname}
+              class="w-full h-full object-cover object-top"
+            />
+            <div
+              id="modal-fighter-mystery"
+              class="w-full h-full flex items-center justify-center font-display text-8xl font-black text-[#EBEBF4] drop-shadow-[0_0_20px_#4236F5]"
+              style="display:none;"
+            >
+              ?
+            </div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-[#060A1A] via-transparent to-transparent opacity-90"
+            >
+            </div>
+            <span
+              id="modal-fighter-badge"
+              class="absolute top-3 left-3 bg-[#4236F5] text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded shadow"
+            >
+              {first.badge || "CONFIRMADO"}
+            </span>
+          </div>
+        </div>
+
+        <!-- Información y Características Completas -->
+        <div class="md:col-span-7 flex flex-col justify-center">
+          <div class="flex items-center gap-2 mb-1">
+            <span id="modal-fighter-flag" class="inline-flex items-center">
+              <CountryFlag
+                country={first.country}
+                flagEmoji={first.flag}
+                size="md"
+              />
+            </span>
+            <span
+              id="modal-fighter-country"
+              class="text-xs uppercase font-extrabold tracking-widest text-[#B58E7D]"
+            >
+              {first.country}
+            </span>
+          </div>
+
+          <h3
+            id="modal-fighter-nickname"
+            class="font-display text-4xl sm:text-5xl font-black text-[#EBEBF4] leading-none mb-1 text-transparent bg-clip-text bg-gradient-to-r from-[#EBEBF4] to-[#c084fc]"
+          >
+            {first.nickname}
+          </h3>
+          <p
+            id="modal-fighter-name"
+            class="text-xs text-[#B58E7D] uppercase tracking-widest mb-4 font-semibold"
+          >
+            {first.name || ""}
+          </p>
+
+          <!-- Banner de Compañero de Equipo (si aplica) -->
+          <div
+            id="modal-teammate-box"
+            class="p-3 rounded-xl bg-[#2a1725] border border-[#ffd6e0]/40 mb-3 flex items-center justify-between"
+            style={teammateNamesMap[first.id] ? "" : "display:none;"}
+          >
+            <span
+              class="text-xs uppercase font-black text-[#ffd6e0] tracking-wider"
+              >Compañero de Equipo:</span
+            >
+            <span
+              id="modal-fighter-teammate"
+              class="font-display text-xl sm:text-2xl font-black text-[#fff1f5]"
+            >
+              {teammateNamesMap[first.id] || "—"}
+            </span>
+          </div>
+
+          <!-- Banner de Contrincante -->
+          <div
+            id="modal-opponent-box"
+            class="p-3 rounded-xl bg-[#1C1132] border border-[#c084fc]/40 mb-4 flex items-center justify-between"
+          >
+            <span
+              class="text-xs uppercase font-black text-[#B58E7D] tracking-wider"
+              >Rival:</span
+            >
+            <span
+              id="modal-fighter-opponent"
+              class="font-display text-xl sm:text-2xl font-black text-[#c084fc]"
+            >
+              VS {opponentNamesMap[first.id] || "Por Definir"}
+            </span>
+          </div>
+
+          <!-- Matriz de Estadísticas & Especificaciones -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 text-xs">
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Edad</span
+              >
+              <span
+                id="modal-fighter-age"
+                class="font-bold text-[#EBEBF4] text-sm">{first.age || "24 años"}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Peso Oficial</span
+              >
+              <span
+                id="modal-fighter-weight"
+                class="font-bold text-[#EBEBF4] text-sm">{first.weight}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Estatura</span
+              >
+              <span
+                id="modal-fighter-height"
+                class="font-bold text-[#EBEBF4] text-sm">{first.height}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Alcance</span
+              >
+              <span
+                id="modal-fighter-reach"
+                class="font-bold text-[#EBEBF4] text-sm"
+                >{first.reach || "1.82 m"}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >División</span
+              >
+              <span
+                id="modal-fighter-category"
+                class="font-bold text-[#c084fc] text-xs truncate block"
+                >{first.category}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Guardia</span
+              >
+              <span
+                id="modal-fighter-stance"
+                class="font-bold text-[#EBEBF4] text-sm"
+                >{first.stance || "Ortodoxa"}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Récord Boxeo</span
+              >
+              <span
+                id="modal-fighter-record"
+                class="font-bold text-[#EBEBF4] text-sm"
+                >{first.record || "Debutante (0-0)"}</span
+              >
+            </div>
+            <div
+              class="p-2.5 rounded-lg bg-[#060A1A] border border-[#B58E7D]/20"
+            >
+              <span class="text-[9px] uppercase font-bold text-[#B58E7D] block"
+                >Evento</span
+              >
+              <span
+                class="font-bold text-[#53FC18] text-xs truncate block"
+                >Coliseo MedPlus</span
+              >
+            </div>
+          </div>
+
+          <!-- Redes Sociales / Canales -->
+          <div
+            id="modal-fighter-socials"
+            class="flex items-center gap-3 pt-2 border-t border-[#B58E7D]/20"
+          >
+            <span class="text-xs text-[#B58E7D] font-bold"
+              >Canales Oficiales:</span
+            >
+            <div class="flex items-center gap-2" id="modal-socials-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script
+  is:inline
+  define:vars={{
+    fightersData: fighters,
+    opponentsMap: opponentMap,
+    opponentNames: opponentNamesMap,
+    teammatesMap: teammateMap,
+    teammateNames: teammateNamesMap,
+    countrySvgs: COUNTRY_SVGS,
+  }}
+>
+  document.addEventListener("DOMContentLoaded", () => {
+    const slots = document.querySelectorAll("#panel-luchadores .roster-slot");
+
+    const elNickname = document.getElementById("stage-nickname");
+    const elName = document.getElementById("stage-name");
+    const elAge = document.getElementById("stage-age");
+    const elHeight = document.getElementById("stage-height");
+    const elWeight = document.getElementById("stage-weight");
+    const elCategory = document.getElementById("stage-category");
+    const elImg = document.getElementById("stage-img");
+    const elMystery = document.getElementById("stage-mystery-char");
+    const elFlag = document.getElementById("stage-flag");
+    const elCountry = document.getElementById("stage-country");
+    const elBadge = document.getElementById("stage-badge");
+    const elTeamRow = document.getElementById("stage-teammate-row");
+    const elTeammate = document.getElementById("stage-teammate");
+    const elOppRow = document.getElementById("stage-opponent-row");
+    const elOpponent = document.getElementById("stage-opponent");
+
+    let currentSelectedFighter = null;
+    let currentSelectedSlot = null;
+
+    function updateOpponentHighlights(fighterId) {
+      // Limpiar highlights de contrincantes y compañeros
+      slots.forEach((s) => {
+        s.classList.remove("opponent");
+        s.classList.remove("teammate");
+      });
+
+      // Resaltar los compañeros de equipo
+      const teammateIds = teammatesMap[fighterId] || [];
+      teammateIds.forEach((tmId) => {
+        const teamSlot = document.querySelector(
+          `#panel-luchadores .roster-slot[data-fighter-id="${tmId}"]`,
+        );
+        if (teamSlot) {
+          teamSlot.classList.add("teammate");
+        }
+      });
+
+      // Resaltar los contrincantes
+      const opponentIds = opponentsMap[fighterId] || [];
+      opponentIds.forEach((oppId) => {
+        const opponentSlot = document.querySelector(
+          `#panel-luchadores .roster-slot[data-fighter-id="${oppId}"]`,
+        );
+        if (opponentSlot) {
+          opponentSlot.classList.add("opponent");
+        }
+      });
+    }
+
+    const elStageChar = document.getElementById("stage-character-btn");
+    const elWatermarkConveyor = document.getElementById(
+      "stage-watermark-conveyor",
+    );
+    const watermarkItems = document.querySelectorAll(".watermark-item");
+    const elStatsContainer = document.getElementById("stage-stats-container");
+    const elInfoContainer = document.getElementById("stage-info-container");
+    const elImpactFlash = document.getElementById("stage-impact-flash");
+
+    function triggerArcadeEffects(fighter) {
+      // 1. Marca de agua tipográfica gigante en cinta continua: activar movimiento al clickear
+      if (elWatermarkConveyor) {
+        elWatermarkConveyor.classList.remove("is-moving");
+        elWatermarkConveyor.classList.remove("conveyor-boost");
+        void elWatermarkConveyor.offsetWidth; // Forzar reflow para reiniciar la animación de cinta
+        elWatermarkConveyor.classList.add("is-moving");
+        elWatermarkConveyor.classList.add("conveyor-boost");
+      }
+
+      // 2. Flash de impacto estilo fighting game
+      if (elImpactFlash) {
+        elImpactFlash.classList.remove("impact-active");
+        void elImpactFlash.offsetWidth;
+        elImpactFlash.classList.add("impact-active");
+      }
+
+      // 3. Golpe de zoom + inercia en la figura del boxeador
+      if (elStageChar) {
+        elStageChar.classList.remove("fighter-enter");
+        void elStageChar.offsetWidth;
+        elStageChar.classList.add("fighter-enter");
+      }
+
+      // 4. Animación de cinta que va a la izquierda y vuelve a entrar en el nombre
+      if (elNickname) {
+        elNickname.classList.remove("name-conveyor");
+        void elNickname.offsetWidth;
+        elNickname.classList.add("name-conveyor");
+      }
+
+      // 5. Stagger effect para las estadísticas de la izquierda
+      if (elStatsContainer) {
+        elStatsContainer.classList.remove("animating");
+        void elStatsContainer.offsetWidth;
+        elStatsContainer.classList.add("animating");
+      }
+
+      // 6. Deslizamiento suave para el país/bandera a la derecha
+      if (elInfoContainer) {
+        elInfoContainer.classList.remove("animating");
+        void elInfoContainer.offsetWidth;
+        elInfoContainer.classList.add("animating");
+      }
+    }
+
+    function renderStage(fighter, isInteractive = false) {
+      if (elNickname) elNickname.textContent = fighter.nickname;
+
+      if (elName) {
+        if (fighter.name && fighter.name.trim() !== "") {
+          elName.textContent = fighter.name;
+          elName.style.display = "";
+        } else {
+          elName.style.display = "none";
+        }
+      }
+
+      if (elAge) elAge.textContent = fighter.age || "—";
+      if (elHeight) elHeight.textContent = fighter.height || "—";
+      if (elWeight) elWeight.textContent = fighter.weight || "—";
+      if (elCategory) elCategory.textContent = fighter.category || "";
+      if (elCountry) elCountry.textContent = fighter.country || "";
+
+      if (elFlag) {
+        const countryKey = (fighter.country || "").trim().toLowerCase();
+        const svgHtml = countrySvgs[countryKey];
+        if (svgHtml) {
+          elFlag.innerHTML = svgHtml;
+          elFlag.style.display = "";
+        } else if (fighter.flag && fighter.flag.trim() !== "") {
+          elFlag.textContent = fighter.flag;
+          elFlag.style.display = "";
+        } else {
+          elFlag.style.display = "none";
+        }
+      }
+
+      if (elBadge) {
+        if (fighter.badge && fighter.badge.trim() !== "") {
+          elBadge.textContent = fighter.badge;
+          elBadge.className = "stage-badge";
+          elBadge.style.display = "";
+        } else if (!fighter.revealed) {
+          elBadge.textContent = "POR REVELAR";
+          elBadge.className = "stage-badge secret";
+          elBadge.style.display = "";
+        } else {
+          elBadge.style.display = "none";
+        }
+      }
+
+      // Mostrar compañero de equipo en el Stage
+      const teamNames = teammateNames[fighter.id];
+      if (elTeamRow && elTeammate) {
+        if (teamNames && teamNames.trim() !== "") {
+          elTeammate.textContent = teamNames;
+          elTeamRow.style.display = "";
+        } else {
+          elTeamRow.style.display = "none";
+        }
+      }
+
+      // Mostrar contrincante en el Stage
+      const oppNames = opponentNames[fighter.id];
+      if (elOppRow && elOpponent) {
+        if (oppNames && oppNames.trim() !== "") {
+          elOpponent.textContent = `VS ${oppNames}`;
+          elOppRow.style.display = "";
+        } else {
+          elOppRow.style.display = "none";
+        }
+      }
+
+      if (fighter.revealed) {
+        if (elImg) {
+          const transparentSrc = fighter.imageTransparent || fighter.image;
+          elImg.setAttribute("data-fallback", fighter.image);
+          elImg.onerror = function () {
+            if (this.src !== fighter.image) {
+              this.src = fighter.image;
+            }
+          };
+          elImg.src = transparentSrc;
+          elImg.style.display = "";
+        }
+        if (elMystery) elMystery.style.display = "none";
+      } else {
+        if (elImg) elImg.style.display = "none";
+        if (elMystery) elMystery.style.display = "flex";
+      }
+
+      // Actualizar todos los elementos de la cinta transportadora infinita de fondo (apodo o país)
+      const watermarkText = fighter.nickname || fighter.country || "";
+      watermarkItems.forEach((item) => {
+        item.textContent = watermarkText;
+      });
+
+      if (isInteractive) {
+        triggerArcadeEffects(fighter);
+      }
+    }
+
+    function select(fighter, slotEl) {
+      currentSelectedFighter = fighter;
+      currentSelectedSlot = slotEl;
+
+      // Quitar selección previa de todos los slots
+      slots.forEach((s) => s.classList.remove("active"));
+      slotEl.classList.add("active");
+
+      updateOpponentHighlights(fighter.id);
+      renderStage(fighter, true);
+    }
+
+    // Modal de detalles y características del boxeador
+    const detailModal = document.getElementById("fighter-detail-modal");
+    const modalCloseBtn = document.getElementById("fighter-modal-close-btn");
+
+    const mImg = document.getElementById("modal-fighter-img");
+    const mMystery = document.getElementById("modal-fighter-mystery");
+    const mBadge = document.getElementById("modal-fighter-badge");
+    const mFlag = document.getElementById("modal-fighter-flag");
+    const mCountry = document.getElementById("modal-fighter-country");
+    const mNickname = document.getElementById("modal-fighter-nickname");
+    const mName = document.getElementById("modal-fighter-name");
+    const mTeamBox = document.getElementById("modal-teammate-box");
+    const mTeammate = document.getElementById("modal-fighter-teammate");
+    const mOpponent = document.getElementById("modal-fighter-opponent");
+    const mAge = document.getElementById("modal-fighter-age");
+    const mWeight = document.getElementById("modal-fighter-weight");
+    const mHeight = document.getElementById("modal-fighter-height");
+    const mCategory = document.getElementById("modal-fighter-category");
+    const mReach = document.getElementById("modal-fighter-reach");
+    const mStance = document.getElementById("modal-fighter-stance");
+    const mRecord = document.getElementById("modal-fighter-record");
+    const mSocials = document.getElementById("modal-socials-container");
+
+    function openFighterModal(f) {
+      if (!detailModal || !f) return;
+
+      if (mNickname) mNickname.textContent = f.nickname;
+      if (mName)
+        mName.textContent =
+          f.name || (f.revealed ? "Atleta Oficial SF5" : "Por Revelar");
+      if (mCountry) mCountry.textContent = f.country || "Internacional";
+      if (mFlag) {
+        const countryKey = (f.country || "").trim().toLowerCase();
+        const svgHtml = countrySvgs[countryKey];
+        if (svgHtml) {
+          mFlag.innerHTML = svgHtml;
+        } else {
+          mFlag.textContent = f.flag || "🇨🇴";
+        }
+      }
+      if (mBadge)
+        mBadge.textContent =
+          f.badge || (f.revealed ? "CONFIRMADO" : "POR REVELAR");
+
+      const team = teammateNames[f.id];
+      if (mTeamBox && mTeammate) {
+        if (team && team.trim() !== "") {
+          mTeammate.textContent = team;
+          mTeamBox.style.display = "flex";
+        } else {
+          mTeamBox.style.display = "none";
+        }
+      }
+
+      const opp = opponentNames[f.id];
+      if (mOpponent)
+        mOpponent.textContent = opp ? `VS ${opp}` : "Por Confirmar";
+
+      if (mAge) mAge.textContent = f.age || "24 años";
+      if (mWeight) mWeight.textContent = f.weight || "75.5 kg";
+      if (mHeight) mHeight.textContent = f.height || "1.80 m";
+      if (mCategory)
+        mCategory.textContent = f.category || "Peso Mediano (78 kg)";
+      if (mReach) mReach.textContent = f.reach || "1.82 m";
+      if (mStance) mStance.textContent = f.stance || "Ortodoxa";
+      if (mRecord) mRecord.textContent = f.record || "Debutante (0-0)";
+
+      if (f.revealed && f.image) {
+        if (mImg) {
+          mImg.src = f.image;
+          mImg.style.display = "block";
+        }
+        if (mMystery) mMystery.style.display = "none";
+      } else {
+        if (mImg) mImg.style.display = "none";
+        if (mMystery) mMystery.style.display = "flex";
+      }
+
+      // Poblar canales / redes sociales
+      if (mSocials) {
+        mSocials.innerHTML = "";
+        if (f.socials?.kick) {
+          mSocials.innerHTML += `<a href="https://kick.com/${f.socials.kick}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded bg-[#53FC18]/10 text-[#53FC18] font-bold text-[11px] border border-[#53FC18]/30 hover:scale-105 transition-transform flex items-center gap-1"><span>🟩</span>Kick: @${f.socials.kick}</a>`;
+        }
+        if (f.socials?.instagram) {
+          mSocials.innerHTML += `<a href="https://instagram.com/${f.socials.instagram}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded bg-[#E1306C]/10 text-[#E1306C] font-bold text-[11px] border border-[#E1306C]/30 hover:scale-105 transition-transform flex items-center gap-1"><span>📸</span>IG: @${f.socials.instagram}</a>`;
+        }
+        if (f.socials?.twitch) {
+          mSocials.innerHTML += `<a href="https://twitch.tv/${f.socials.twitch}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded bg-[#9146FF]/10 text-[#9146FF] font-bold text-[11px] border border-[#9146FF]/30 hover:scale-105 transition-transform flex items-center gap-1"><span>🟣</span>Twitch: @${f.socials.twitch}</a>`;
+        }
+        if (!f.socials || Object.keys(f.socials).length === 0) {
+          mSocials.innerHTML = `<span class="text-xs text-[#B58E7D]/70 italic">Redes no vinculadas</span>`;
+        }
+      }
+
+      detailModal.showModal();
+    }
+
+    if (modalCloseBtn && detailModal) {
+      modalCloseBtn.addEventListener("click", () => detailModal.close());
+      detailModal.addEventListener("click", (e) => {
+        if (e.target === detailModal) detailModal.close();
+      });
+    }
+
+    const stageAreaContainer = document.getElementById("stage-area-container");
+    const stageCharBtn = document.getElementById("stage-character-btn");
+    const rosterPanelContainer = document.getElementById(
+      "roster-panel-container",
+    );
+    const stageCollapseBtn = document.getElementById("stage-collapse-btn");
+
+    function expandFighterView() {
+      if (!stageAreaContainer) return;
+      stageAreaContainer.classList.add("character-expanded");
+      if (stageCollapseBtn) stageCollapseBtn.style.display = "flex";
+
+      // Bloquear el selector de boxeadores abajo
+      if (rosterPanelContainer) {
+        rosterPanelContainer.classList.add("roster-locked");
+      }
+
+      // Marcar la casilla del boxeador seleccionado con la X negra que cubre la ficha
+      slots.forEach((s) => s.classList.remove("slot-locked"));
+      if (currentSelectedSlot) {
+        currentSelectedSlot.classList.add("slot-locked");
+      }
+    }
+
+    function collapseFighterView() {
+      if (!stageAreaContainer) return;
+      stageAreaContainer.classList.remove("character-expanded");
+      if (stageCollapseBtn) stageCollapseBtn.style.display = "none";
+
+      // Desbloquear el selector inferior y quitar cualquier selección (X negra y active)
+      if (rosterPanelContainer) {
+        rosterPanelContainer.classList.remove("roster-locked");
+      }
+      slots.forEach((s) => {
+        s.classList.remove("slot-locked");
+        s.classList.remove("active");
+        s.classList.remove("opponent");
+        s.classList.remove("teammate");
+      });
+
+      // Resetear boxeador seleccionado
+      currentSelectedFighter = null;
+      currentSelectedSlot = null;
+
+      // Detener la cinta y dejar el nombre del fondo totalmente estático
+      if (elWatermarkConveyor) {
+        elWatermarkConveyor.classList.remove("is-moving");
+        elWatermarkConveyor.classList.remove("conveyor-boost");
+      }
+    }
+
+    if (stageCharBtn) {
+      stageCharBtn.addEventListener("click", (e) => {
+        // Si hace clic en el botón de volver, colapsar y volver al selector
+        if (e.target.closest("#stage-collapse-btn")) {
+          e.stopPropagation();
+          collapseFighterView();
+          return;
+        }
+        // Al darle clic directamente a la foto/contenedor del boxeador:
+        if (stageAreaContainer?.classList.contains("character-expanded")) {
+          return;
+        }
+        expandFighterView();
+      });
+    }
+
+    if (stageCollapseBtn) {
+      stageCollapseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        collapseFighterView();
+      });
+    }
+
+    // Interacción en las casillas (slots):
+    slots.forEach((slot) => {
+      const idx = parseInt(slot.getAttribute("data-slot-index") || "0", 10);
+      const f = fightersData[idx];
+
+      // Al pasar el cursor por encima (hover):
+      // Previsualiza al boxeador, sus datos y el nombre detrás en tiempo real sin deseleccionar el activo
+      slot.addEventListener("mouseenter", () => {
+        if (f) {
+          slots.forEach((s) => s.classList.remove("is-hovered-fighter"));
+          slot.classList.add("is-hovered-fighter");
+          updateOpponentHighlights(f.id);
+          renderStage(f, false);
+        }
+      });
+
+      // Al retirar el cursor: restaurar de inmediato al boxeador seleccionado actualmente
+      slot.addEventListener("mouseleave", () => {
+        slot.classList.remove("is-hovered-fighter");
+        if (currentSelectedFighter) {
+          updateOpponentHighlights(currentSelectedFighter.id);
+          renderStage(currentSelectedFighter, false);
+        }
+      });
+
+      // Al hacer click en cualquier casilla del selector:
+      // Si ya está bloqueado, la ÚNICA forma de salir o cambiar es tocando "Volver al Selector"
+      slot.addEventListener("click", (e) => {
+        if (rosterPanelContainer?.classList.contains("roster-locked")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        if (f) {
+          select(f, slot);
+          expandFighterView();
+        }
+      });
+    });
+
+    // Interacción en las fichas / tarjetas individuales de boxeadores:
+    const cards = document.querySelectorAll("#panel-luchadores .boxeador-card");
+    cards.forEach((card) => {
+      const fighterId = card.getAttribute("data-fighter-id");
+      const f = fightersData.find((item) => item.id === fighterId);
+      if (!f) return;
+
+      // Al hacer click en la tarjeta: abrir únicamente la ficha completa / modal sin alterar el selector ni el stage
+      card.addEventListener("click", () => {
+        openFighterModal(f);
+      });
+    });
+
+    // ============================
+    // SISTEMA DE FILTRADO DE PELEADORES
+    // ============================
+    const searchInput = document.getElementById("fighter-search-input");
+    const countryFilterBtns = document.querySelectorAll(".fighter-filter-btn");
+    const noFightersMessage = document.getElementById("no-fighters-found");
+    const filterCountEl = document.getElementById("fighters-filter-count");
+
+    let currentCountryFilter = "all";
+    let currentSearchTerm = "";
+
+    function filterFighters() {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const nickname = (
+          card.getAttribute("data-nickname") || ""
+        ).toLowerCase();
+        const country = (card.getAttribute("data-country") || "").toLowerCase();
+        const category = (
+          card.getAttribute("data-category") || ""
+        ).toLowerCase();
+
+        // Evaluar filtro por país
+        const matchesCountry =
+          currentCountryFilter === "all" ||
+          country.includes(currentCountryFilter);
+
+        // Evaluar búsqueda por texto (nombre, apodo o país)
+        const matchesSearch =
+          currentSearchTerm === "" ||
+          nickname.includes(currentSearchTerm) ||
+          country.includes(currentSearchTerm) ||
+          category.includes(currentSearchTerm);
+
+        if (matchesCountry && matchesSearch) {
+          card.style.display = "";
+          visibleCount++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      // Actualizar contador
+      if (filterCountEl) {
+        filterCountEl.textContent = `${visibleCount} ${visibleCount === 1 ? "resultado" : "peleadores"}`;
+      }
+
+      // Mostrar u ocultar mensaje de "No encontrado"
+      if (noFightersMessage) {
+        if (visibleCount === 0) {
+          noFightersMessage.classList.remove("hidden");
+        } else {
+          noFightersMessage.classList.add("hidden");
+        }
+      }
+    }
+
+    // Evento de búsqueda por texto
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        currentSearchTerm = e.target.value.trim().toLowerCase();
+        filterFighters();
+      });
+    }
+
+    // Eventos de botones de filtro por país
+    countryFilterBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        countryFilterBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCountryFilter = btn.getAttribute("data-filter-country") || "all";
+        filterFighters();
+      });
+    });
+
+    // ============================
+    // NAVEGACIÓN FLECHAS DEL CARRUSEL DE PAÍSES
+    // ============================
+    const filterScrollContainer = document.getElementById(
+      "fighter-country-filters",
+    );
+    const scrollLeftBtn = document.getElementById("filter-scroll-left-btn");
+    const scrollRightBtn = document.getElementById("filter-scroll-right-btn");
+
+    function updateCarouselArrows() {
+      if (!filterScrollContainer || !scrollLeftBtn || !scrollRightBtn) return;
+      const { scrollLeft, scrollWidth, clientWidth } = filterScrollContainer;
+      scrollLeftBtn.disabled = scrollLeft <= 2;
+      scrollRightBtn.disabled = scrollLeft + clientWidth >= scrollWidth - 2;
+    }
+
+    if (scrollLeftBtn && filterScrollContainer) {
+      scrollLeftBtn.addEventListener("click", () => {
+        filterScrollContainer.scrollBy({ left: -140, behavior: "smooth" });
+      });
+    }
+
+    if (scrollRightBtn && filterScrollContainer) {
+      scrollRightBtn.addEventListener("click", () => {
+        filterScrollContainer.scrollBy({ left: 140, behavior: "smooth" });
+      });
+    }
+
+    if (filterScrollContainer) {
+      filterScrollContainer.addEventListener("scroll", updateCarouselArrows, {
+        passive: true,
+      });
+      // Ejecutar comprobación inicial
+      setTimeout(updateCarouselArrows, 150);
+      window.addEventListener("resize", updateCarouselArrows);
+    }
+  });
+</script>

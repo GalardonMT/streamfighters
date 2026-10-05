@@ -1,0 +1,388 @@
+---
+// src/pages/combates.astro
+import Navbar from "../components/Navbar.astro";
+import Combates from "../components/Combates.astro";
+import Boxeadores from "../components/Boxeadores.astro";
+import Artistas from "../components/Artistas.astro";
+import DotGridBackground from "../components/DotGridBackground.astro";
+import HudOverlay from "../components/HudOverlay.astro";
+import Footer from "../components/Footer.astro";
+import { fights, fighters, artists } from "../data/eventData";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>
+			Stream Fighters V | Combates de Boxeo y Artistas Oficiales
+		</title>
+		<meta
+			name="description"
+			content="Sitio oficial de Stream Fighters V. Conoce la cartelera de combates de boxeo, fichas de boxeadores y artistas invitados en vivo."
+		/>
+	</head>
+
+	<body
+		class="bg-[#060A1A] text-[#EBEBF4] min-h-screen flex flex-col selection:bg-[#4236F5] selection:text-[#EBEBF4]"
+	>
+		<!-- Animated Dot Grid Background -->
+		<DotGridBackground />
+
+		<!-- HUD Tech Overlay -->
+		<HudOverlay />
+
+		<!-- Navigation Bar -->
+		<Navbar currentPage="combates" />
+
+		<main class="flex-grow">
+			<!-- HERO BANNER SECTION -->
+			<section
+				class="relative overflow-hidden pt-12 pb-16 lg:pt-16 lg:pb-20 border-b border-[#B58E7D]/20 bg-cover bg-center bg-no-repeat bg-fixed"
+				style="background-image: linear-gradient(180deg, rgba(6, 10, 26, 0.75) 0%, rgba(6, 10, 26, 0.90) 70%, #060A1A 100%), url('/images/background.png');"
+			>
+				<!-- Inner container with z-10 to stay above scan-lines, HUD overlay, and vignette -->
+				<div
+					class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+				>
+					<!-- Hero Event Logo -->
+					<div class="flex justify-center mb-4">
+						<a
+							href="/"
+							title="Ir a Inicio"
+							class="hover:scale-105 transition-transform duration-300"
+						>
+							<img
+								src="/images/logo.png"
+								alt="Stream Fighters V"
+								class="w-96 sm:w-120 md:w-140 lg:w-160 h-auto object-contain drop-shadow-[0_10px_25px_rgba(66,54,245,0.35)]"
+								loading="eager"
+							/>
+						</a>
+					</div>
+
+					<!-- Header Subtitle -->
+					<h1
+						class="font-display text-3xl sm:text-5xl font-extrabold text-[#EBEBF4] tracking-wider uppercase"
+					>
+						9 COMBATES • 22 BOXEADORES • 4 ARTISTAS
+					</h1>
+
+					<p
+						class="mt-3 text-sm sm:text-lg text-[#B58E7D] max-w-3xl mx-auto font-medium"
+					>
+						Explora la cartelera oficial, las fichas técnicas de los
+						22 boxeadores y los shows musicales en directo.
+					</p>
+				</div>
+			</section>
+
+			<!-- INTERACTIVE SECTION TABS SWITCHER -->
+			<section
+				id="section-switcher"
+				class="sticky top-20 z-40 bg-[#060A1A]/95 backdrop-blur-md py-4 border-b border-[#B58E7D]/20 shadow-md"
+			>
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div class="flex items-center justify-center">
+						<!-- Section Tab Buttons -->
+						<div
+							class="flex items-center justify-center gap-4 sm:gap-8 flex-wrap"
+						>
+							<button
+								id="tab-btn-combates"
+								type="button"
+								data-tab="combates"
+								class="tab-btn tab-active py-2 px-3 sm:px-4 text-sm sm:text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2 select-none"
+							>
+								<span>Combates</span>
+								<span
+									class="tab-count text-[11px] px-2 py-0.5 rounded-md bg-[#16123D] text-[#5546FF] font-bold font-mono"
+									>{fights.length}</span
+								>
+							</button>
+
+							<button
+								id="tab-btn-luchadores"
+								type="button"
+								data-tab="luchadores"
+								class="tab-btn py-2 px-3 sm:px-4 text-sm sm:text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2 select-none"
+							>
+								<span>Boxeadores</span>
+								<span
+									class="tab-count text-[11px] px-2 py-0.5 rounded-md bg-[#16123D] text-[#5546FF] font-bold font-mono"
+									>{fighters.length}</span
+								>
+							</button>
+
+							<button
+								id="tab-btn-artistas"
+								type="button"
+								data-tab="artistas"
+								class="tab-btn py-2 px-3 sm:px-4 text-sm sm:text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2 select-none"
+							>
+								<span>Artistas</span>
+								<span
+									class="tab-count text-[11px] px-2 py-0.5 rounded-md bg-[#16123D] text-[#5546FF] font-bold font-mono"
+									>{artists.length}
+								</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- CONTENT PANELS (SEPARATED COMPONENTS) -->
+			<div
+				class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16"
+			>
+				<!-- SECCIÓN COMBATES -->
+				<Combates />
+
+				<!-- SECCIÓN BOXEADORES -->
+				<Boxeadores />
+
+				<!-- SECCIÓN ARTISTAS -->
+				<Artistas />
+			</div>
+
+			<!-- FAQ & EVENT INFO BANNER -->
+			<section
+				class="relative z-10 overflow-hidden border-t border-[#B58E7D]/20 py-16 bg-cover bg-center bg-no-repeat"
+				style="background-image: linear-gradient(180deg, rgba(8, 7, 13, 0.80) 0%, rgba(28, 17, 50, 0.75) 50%, rgba(8, 7, 13, 0.90) 100%), url('/images/background.png');"
+			>
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+						<div
+							class="p-6 rounded-xl bg-[#060A1A] border border-[#B58E7D]/20"
+						>
+							<div
+								class="w-10 h-10 rounded-lg bg-[#4236F5]/20 border border-[#4236F5]/40 flex items-center justify-center text-lg mb-4 text-[#4236F5]"
+							>
+								📍
+							</div>
+							<h4
+								class="font-display text-2xl font-bold text-[#EBEBF4] mb-2"
+							>
+								Lugar y Acceso
+							</h4>
+							<p class="text-xs text-[#B58E7D] leading-relaxed">
+								Coliseo MedPlus (Arena Bogotá). Puertas abiertas
+								desde las 16:00. Estacionamiento privado y
+								acceso VIP disponible con antelación.
+							</p>
+						</div>
+
+						<div
+							class="p-6 rounded-xl bg-[#060A1A] border border-[#B58E7D]/20"
+						>
+							<div
+								class="w-10 h-10 rounded-lg bg-[#4236F5]/20 border border-[#4236F5]/40 flex items-center justify-center text-lg mb-4 text-[#4236F5]"
+							>
+								📺
+							</div>
+							<h4
+								class="font-display text-2xl font-bold text-[#EBEBF4] mb-2"
+							>
+								Transmisión Global en Kick
+							</h4>
+							<p class="text-xs text-[#B58E7D] leading-relaxed">
+								Emisión totalmente gratuita y en resolución 4K a
+								través del canal oficial de WestCol en Kick para
+								todo el mundo.
+							</p>
+						</div>
+
+						<div
+							class="p-6 rounded-xl bg-[#060A1A] border border-[#B58E7D]/20"
+						>
+							<div
+								class="w-10 h-10 rounded-lg bg-[#4236F5]/20 border border-[#4236F5]/40 flex items-center justify-center text-lg mb-4 text-[#4236F5]"
+							>
+								⚖️
+							</div>
+							<h4
+								class="font-display text-2xl font-bold text-[#EBEBF4] mb-2"
+							>
+								Reglamento Deportivo
+							</h4>
+							<p class="text-xs text-[#B58E7D] leading-relaxed">
+								Supervisado por jueces y árbitros federados de
+								boxeo. Cascos protectores y guantes certificados
+								de 12 a 16 oz según categoría.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- FOOTER -->
+			<Footer currentPage="combates" />
+
+			<!-- TICKET MODAL -->
+			<dialog
+				id="ticket-modal"
+				class="p-0 rounded-2xl bg-[#1C1132] border border-[#4236F5] shadow-2xl backdrop:bg-[#060A1A]/80 backdrop:backdrop-blur-sm max-w-lg w-full text-[#EBEBF4] m-auto"
+			>
+				<div class="p-6">
+					<div
+						class="flex items-center justify-between pb-4 border-b border-[#B58E7D]/20"
+					>
+						<div>
+							<h3
+								class="font-display text-3xl font-extrabold text-[#EBEBF4] leading-none"
+							>
+								RESERVA TUS ENTRADAS
+							</h3>
+							<span class="text-xs text-[#B58E7D]"
+								>Arena Bogotá • 14 Noviembre 2026</span
+							>
+						</div>
+						<button
+							type="button"
+							onclick="document.getElementById('ticket-modal')?.close()"
+							class="text-[#B58E7D] hover:text-[#EBEBF4] text-xl font-bold p-1 cursor-pointer"
+						>
+							✕
+						</button>
+					</div>
+
+					<div class="space-y-3 my-6">
+						<div
+							class="p-3.5 rounded-xl bg-[#060A1A] border border-[#4236F5]/50 flex items-center justify-between hover:border-[#4236F5] transition-colors cursor-pointer"
+						>
+							<div>
+								<span
+									class="font-bold text-sm text-[#EBEBF4] block"
+									>VIP Ring Side</span
+								>
+								<span class="text-[11px] text-[#B58E7D]"
+									>Fila 1 a 4 + Acceso a zona de pesaje
+									oficial</span
+								>
+							</div>
+							<span
+								class="font-display text-2xl font-bold text-[#4236F5]"
+								>$250 USD</span
+							>
+						</div>
+
+						<div
+							class="p-3.5 rounded-xl bg-[#060A1A] border border-[#B58E7D]/20 flex items-center justify-between hover:border-[#4236F5] transition-colors cursor-pointer"
+						>
+							<div>
+								<span
+									class="font-bold text-sm text-[#EBEBF4] block"
+									>Gradería Oro</span
+								>
+								<span class="text-[11px] text-[#B58E7D]"
+									>Visión panorámica central del ring y
+									escenario</span
+								>
+							</div>
+							<span
+								class="font-display text-2xl font-bold text-[#EBEBF4]"
+								>$120 USD</span
+							>
+						</div>
+
+						<div
+							class="p-3.5 rounded-xl bg-[#060A1A] border border-[#B58E7D]/20 flex items-center justify-between hover:border-[#4236F5] transition-colors cursor-pointer"
+						>
+							<div>
+								<span
+									class="font-bold text-sm text-[#EBEBF4] block"
+									>General Arena</span
+								>
+								<span class="text-[11px] text-[#B58E7D]"
+									>Acceso a gradas generales y shows de
+									artistas</span
+								>
+							</div>
+							<span
+								class="font-display text-2xl font-bold text-[#EBEBF4]"
+								>$55 USD</span
+							>
+						</div>
+					</div>
+
+					<a
+						href="https://www.taquillalive.com/performance-details/?artist=westcol&event=TCL.EVN1440.PRF1"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="w-full text-center block bg-[#4236F5] hover:bg-[#3428df] text-[#EBEBF4] font-bold uppercase tracking-wider py-3.5 rounded-xl shadow-md shadow-black/30 transition-all cursor-pointer"
+					>
+						Proceder a Compra en TaquillaLive
+					</a>
+				</div>
+			</dialog>
+
+			<!-- CLIENT SCRIPT FOR SECTIONS -->
+			<script is:inline>
+				document.addEventListener("DOMContentLoaded", () => {
+					// Tab switching logic
+					const tabButtons = document.querySelectorAll(".tab-btn");
+					const panels = {
+						combates: document.getElementById("panel-combates"),
+						luchadores: document.getElementById("panel-luchadores"),
+						artistas: document.getElementById("panel-artistas"),
+					};
+
+					function switchTab(activeTab) {
+						tabButtons.forEach((btn) => {
+							const isMatch =
+								btn.getAttribute("data-tab") === activeTab;
+							if (isMatch) {
+								btn.classList.add("tab-active");
+							} else {
+								btn.classList.remove("tab-active");
+							}
+						});
+
+						// Show/hide corresponding panel
+						Object.keys(panels).forEach((key) => {
+							const panel = panels[key];
+							if (panel) {
+								if (key === activeTab) {
+									panel.classList.remove("hidden");
+									panel.classList.add("block");
+								} else {
+									panel.classList.add("hidden");
+									panel.classList.remove("block");
+								}
+							}
+						});
+					}
+
+					// Attach event listeners to tab buttons
+					tabButtons.forEach((btn) => {
+						btn.addEventListener("click", () => {
+							const tab = btn.getAttribute("data-tab");
+							if (tab) switchTab(tab);
+						});
+					});
+
+					// Quick navbar links
+					const navQuickLinks =
+						document.querySelectorAll(".nav-quick-link");
+					navQuickLinks.forEach((link) => {
+						link.addEventListener("click", () => {
+							const target = link.getAttribute("data-nav-target");
+							if (target) {
+								switchTab(target);
+								document
+									.getElementById("section-switcher")
+									?.scrollIntoView({ behavior: "smooth" });
+							}
+						});
+					});
+				});
+			</script>
+		</main>
+
+		<!-- Footer Oficial -->
+		<Footer currentPage="combates" />
+	</body>
+</html>

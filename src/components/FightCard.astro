@@ -1,0 +1,229 @@
+---
+// src/components/FightCard.astro
+import type { Fight } from "../data/eventData";
+
+interface Props {
+  fight: Fight;
+  class?: string;
+  variant?: "square" | "wide";
+}
+
+const { fight, class: className = "", variant = "square" } = Astro.props;
+
+const corner1Fighters =
+  fight.team1 && fight.team1.length > 0 ? fight.team1 : [fight.fighter1];
+const corner2Fighters =
+  fight.team2 && fight.team2.length > 0 ? fight.team2 : [fight.fighter2];
+
+const corner1Names = corner1Fighters.map((f) => f.nickname).join(" & ");
+const corner2Names = corner2Fighters.map((f) => f.nickname).join(" & ");
+
+// Extraer el texto de rounds limpio, ej: "4 Rounds x 3 Min" -> "4 ROUNDS"
+const displayRounds = fight.rounds.toLowerCase().includes("round")
+  ? fight.rounds.split(/x|\*/i)[0].trim().toUpperCase()
+  : fight.rounds.toUpperCase();
+---
+
+{
+  variant === "square" ? (
+    <div
+      class={`combate-square-card group ${className}`}
+      data-fight-id={fight.id}
+    >
+      {/* Rectángulo de fondo que se extiende horizontalmente al infinito en hover */}
+      <div class="combate-card-bg absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0">
+        <div class="absolute inset-0 bg-gradient-to-b from-[#11172e] via-[#0d1224] to-[#090d1a]" />
+        <div class="combate-dark-overlay absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#02040b_0%,_#030512_55%,_#060919_100%)] opacity-0 group-hover:opacity-100 group-[.is-active]:opacity-100 transition-opacity duration-700" />
+      </div>
+
+      {/* Fighters: contenidos en reposo, sobresalen únicamente al abrirse */}
+      <div class="absolute inset-0 flex items-end justify-between pointer-events-none pb-1.5 sm:pb-2 pt-0 px-2 sm:px-4 transition-all duration-700 ease-out z-20 overflow-visible">
+        {/* Corner 1 */}
+        <div class="corner-fighter-box w-[44%] sm:w-[42%] group-hover:w-[45%] group-[.is-active]:w-[45%] h-full flex items-end justify-center transition-all duration-700 ease-out overflow-visible">
+          {corner1Fighters.length > 1 ? (
+            <div class="flex items-end justify-center h-full w-full -space-x-6 sm:-space-x-8 overflow-visible">
+              {corner1Fighters.map((f, i) => (
+                <img
+                  src={f.imageTransparent || f.image}
+                  alt={f.nickname}
+                  class={`fighter-img-multi h-[82%] sm:h-[85%] w-auto max-w-[85%] object-contain object-bottom origin-bottom drop-shadow-[0_12px_28px_rgba(0,0,0,0.95)] group-hover:scale-110 sm:group-hover:scale-112 md:group-hover:scale-115 group-[.is-active]:scale-110 sm:group-[.is-active]:scale-112 md:group-[.is-active]:scale-115 transition-transform duration-600 ease-out ${i === 0 ? "z-10" : "z-0"}`}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          ) : (
+            <img
+              src={fight.fighter1.imageTransparent || fight.fighter1.image}
+              alt={fight.fighter1.nickname}
+              class="fighter-img-1v1 h-[84%] sm:h-[86%] w-auto max-w-[95%] object-contain object-bottom origin-bottom drop-shadow-[0_12px_28px_rgba(0,0,0,0.95)] group-hover:scale-115 sm:group-hover:scale-118 md:group-hover:scale-120 group-[.is-active]:scale-115 sm:group-[.is-active]:scale-118 md:group-[.is-active]:scale-120 transition-transform duration-600 ease-out"
+              loading="lazy"
+            />
+          )}
+        </div>
+
+        {/* Corner 2 */}
+        <div class="corner-fighter-box w-[44%] sm:w-[42%] group-hover:w-[45%] group-[.is-active]:w-[45%] h-full flex items-end justify-center transition-all duration-700 ease-out overflow-visible">
+          {corner2Fighters.length > 1 ? (
+            <div class="flex items-end justify-center h-full w-full -space-x-6 sm:-space-x-8 overflow-visible">
+              {corner2Fighters.map((f, i) => (
+                <img
+                  src={f.imageTransparent || f.image}
+                  alt={f.nickname}
+                  class={`fighter-img-multi h-[82%] sm:h-[85%] w-auto max-w-[85%] object-contain object-bottom origin-bottom drop-shadow-[0_12px_28px_rgba(0,0,0,0.95)] group-hover:scale-110 sm:group-hover:scale-112 md:group-hover:scale-115 group-[.is-active]:scale-110 sm:group-[.is-active]:scale-112 md:group-[.is-active]:scale-115 transition-transform duration-600 ease-out ${i === 0 ? "z-10" : "z-0"}`}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          ) : (
+            <img
+              src={fight.fighter2.imageTransparent || fight.fighter2.image}
+              alt={fight.fighter2.nickname}
+              class="fighter-img-1v1 h-[84%] sm:h-[86%] w-auto max-w-[95%] object-contain object-bottom origin-bottom drop-shadow-[0_12px_28px_rgba(0,0,0,0.95)] group-hover:scale-115 sm:group-hover:scale-118 md:group-hover:scale-120 group-[.is-active]:scale-115 sm:group-[.is-active]:scale-118 md:group-[.is-active]:scale-120 transition-transform duration-600 ease-out"
+              loading="lazy"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* VS centrado: SIEMPRE POR DELANTE DE LOS BOXEADORES (z-30) */}
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-30 translate-y-1 sm:translate-y-2">
+        <span class="vs-text font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-widest drop-shadow-[0_4px_16px_rgba(0,0,0,0.98)] group-hover:scale-115 group-[.is-active]:scale-115 transition-all duration-500 ease-out select-none">
+          VS
+        </span>
+      </div>
+
+      {/* Sombra base integrada que se extiende horizontalmente al infinito junto a la carta */}
+      <div class="combate-bottom-shadow" />
+
+      {/* Bottom: nombres y datos integrados en la base del mismo rectángulo */}
+      <div class="absolute bottom-0 inset-x-0 px-3.5 sm:px-6 pb-2.5 sm:pb-3.5 z-25 pointer-events-none flex items-end justify-between gap-2">
+        <span class="fighter-name-text font-display font-black uppercase text-white truncate max-w-[45%] leading-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+          {corner1Names}
+        </span>
+
+        {/* Centro: Peso arriba de la hora */}
+        <div class="flex flex-col items-center justify-end text-center shrink-0 px-1 pb-0.5">
+          <span class="fight-weight-text font-mono text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#B58E7D] leading-none mb-1.5 whitespace-nowrap">
+            {fight.category}
+          </span>
+          <span class="fight-time-text font-mono text-[9px] sm:text-[11px] font-bold text-white/90 tracking-wider leading-none whitespace-nowrap">
+            {fight.time}
+          </span>
+        </div>
+
+        <span class="fighter-name-text font-display font-black uppercase text-white truncate max-w-[45%] text-right leading-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+          {corner2Names}
+        </span>
+      </div>
+    </div>
+  ) : (
+    /* Variant Wide (Default legacy for homepage) */
+    <div
+      class={`relative overflow-hidden rounded-2xl bg-[#070A17] border border-[#B58E7D]/20 hover:border-[#4236F5] transition-all duration-300 group shadow-lg ${className}`}
+      data-fight-id={fight.id}
+    >
+      {/* Background Glow & Event Watermark */}
+      <div class="absolute inset-0 bg-radial from-[#1C1132]/40 via-transparent to-transparent pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity"></div>
+
+      {/* Main Duel Arena (Horizontal Layout 41% - 18% - 41%) */}
+      <div class="relative z-10 flex items-stretch justify-between h-60 sm:h-64 md:h-72 select-none">
+        {/* LEFT FIGHTER (Corner 1) */}
+        <div class="w-[41%] relative flex flex-col justify-end p-2 sm:p-4 overflow-hidden group/corner1 transition-colors">
+          <div class="absolute inset-0 flex items-end justify-center pointer-events-none pb-7 sm:pb-8">
+            {corner1Fighters.length > 1 ? (
+              <div class="flex items-end justify-center h-full w-full -space-x-8 sm:-space-x-12">
+                {corner1Fighters.map((f, i) => (
+                  <img
+                    src={f.imageTransparent || f.image}
+                    alt={f.nickname}
+                    class={`h-[82%] sm:h-[88%] w-auto max-w-[70%] object-contain object-bottom drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] group-hover/corner1:scale-105 transition-transform duration-300 ${
+                      i === 0 ? "z-10" : "z-0 opacity-95"
+                    }`}
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={fight.fighter1.imageTransparent || fight.fighter1.image}
+                alt={fight.fighter1.nickname}
+                class="h-[84%] sm:h-[90%] w-auto max-w-[95%] object-contain object-bottom drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] group-hover/corner1:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            )}
+          </div>
+
+          <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#070A17] via-[#070A17]/80 to-transparent pointer-events-none z-10"></div>
+
+          <div class="relative z-20 text-center pb-2">
+            <span class="font-display text-sm sm:text-lg md:text-xl lg:text-2xl font-black uppercase tracking-normal sm:tracking-wider text-white group-hover/corner1:text-[#4236F5] transition-colors block truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              {corner1Names}
+            </span>
+          </div>
+        </div>
+
+        {/* CENTER DIVIDER & MATCH INFO (18%) */}
+        <div class="w-[18%] flex flex-col items-center justify-between py-4 sm:py-5 z-20 select-none relative shrink-0">
+          <img
+            src="/images/logo2.png"
+            alt=""
+            class="absolute inset-0 m-auto w-12 sm:w-16 h-auto opacity-10 pointer-events-none select-none filter grayscale"
+          />
+
+          <div class="z-10">
+            <span class="font-mono text-[9px] sm:text-[10px] font-bold text-[#B58E7D] tracking-wider px-2 py-0.5 rounded border border-[#B58E7D]/25 bg-[#060A1A]/90 shadow-sm uppercase truncate max-w-[130px] block">
+              {fight.category.split("(")[0].trim()}
+            </span>
+          </div>
+
+          <div class="my-auto z-10 flex flex-col items-center">
+            <span class="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-widest leading-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+              VS
+            </span>
+          </div>
+
+          <div class="z-10 text-center">
+            <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#B58E7D] block leading-none">
+              {displayRounds}
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT FIGHTER (Corner 2) */}
+        <div class="w-[41%] relative flex flex-col justify-end p-2 sm:p-4 overflow-hidden group/corner2 transition-colors">
+          <div class="absolute inset-0 flex items-end justify-center pointer-events-none pb-7 sm:pb-8">
+            {corner2Fighters.length > 1 ? (
+              <div class="flex items-end justify-center h-full w-full -space-x-8 sm:-space-x-12">
+                {corner2Fighters.map((f, i) => (
+                  <img
+                    src={f.imageTransparent || f.image}
+                    alt={f.nickname}
+                    class={`h-[82%] sm:h-[88%] w-auto max-w-[70%] object-contain object-bottom drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] group-hover/corner2:scale-105 transition-transform duration-300 ${
+                      i === 0 ? "z-10" : "z-0 opacity-95"
+                    }`}
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            ) : (
+              <img
+                src={fight.fighter2.imageTransparent || fight.fighter2.image}
+                alt={fight.fighter2.nickname}
+                class="h-[84%] sm:h-[90%] w-auto max-w-[95%] object-contain object-bottom drop-shadow-[0_12px_24px_rgba(0,0,0,0.9)] group-hover/corner2:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            )}
+          </div>
+
+          <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#070A17] via-[#070A17]/80 to-transparent pointer-events-none z-10"></div>
+
+          <div class="relative z-20 text-center pb-2">
+            <span class="font-display text-sm sm:text-lg md:text-xl lg:text-2xl font-black uppercase tracking-normal sm:tracking-wider text-white group-hover/corner2:text-[#53FC18] transition-colors block truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              {corner2Names}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

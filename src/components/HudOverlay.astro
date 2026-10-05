@@ -1,0 +1,329 @@
+---
+// HudOverlay.astro
+// Adds the futuristic HUD/tech interface decorative overlay elements
+// Scan lines, corner brackets, floating data readouts, connecting lines
+---
+
+<!-- Scan Lines Overlay -->
+<div id="scan-lines" aria-hidden="true"></div>
+
+<!-- Floating HUD Decorative Elements -->
+<div id="hud-overlay" aria-hidden="true">
+
+  <!-- Top-left corner data readout -->
+  <div class="hud-element hud-top-left">
+    <div class="hud-bracket-tl"></div>
+    <div class="hud-data">
+      <span class="hud-label">// TRANSMISIÓN EN VIVO</span>
+      <span class="hud-value">STREAM_FIGHTERS_5</span>
+      <span class="hud-label">// AUDIENCIA</span>
+      <span class="hud-value hud-blink">► CONECTADA</span>
+    </div>
+  </div>
+
+  <!-- Top-right status -->
+  <div class="hud-element hud-top-right">
+    <div class="hud-bracket-tr"></div>
+    <div class="hud-data">
+      <span class="hud-label">STREAM FIGHTERS 5 //// <span class="hud-accent">(:)</span> LISTO</span>
+      <span class="hud-value">STATUS /// ESTABLECIDO</span>
+    </div>
+  </div>
+
+  <!-- Bottom-left data -->
+  <div class="hud-element hud-bottom-left">
+    <div class="hud-bracket-bl"></div>
+    <div class="hud-data">
+      <span class="hud-label">PAÍS:</span>
+      <span class="hud-value">COLOMBIA ────</span>
+      <span class="hud-label">EVENTO:</span>
+      <span class="hud-value">SF5 ■</span>
+    </div>
+  </div>
+
+  <!-- Bottom-right status -->
+  <div class="hud-element hud-bottom-right">
+    <div class="hud-bracket-br"></div>
+    <div class="hud-data">
+      <span class="hud-label">ESCENARIO /// ESTABLECIDO /// NO ERROR ✓</span>
+      <span class="hud-value">STATUS /// <span class="hud-accent">(:)</span> COMPLETADO</span>
+    </div>
+  </div>
+
+  <!-- Connecting lines SVG -->
+  <svg class="hud-lines" viewBox="0 0 1920 1080" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Top left horizontal line -->
+    <line x1="0" y1="120" x2="280" y2="120" class="hud-line" />
+    <line x1="280" y1="120" x2="320" y2="160" class="hud-line" />
+    <line x1="320" y1="160" x2="500" y2="160" class="hud-line" />
+
+    <!-- Top right connector -->
+    <line x1="1920" y1="100" x2="1640" y2="100" class="hud-line" />
+    <line x1="1640" y1="100" x2="1600" y2="140" class="hud-line" />
+
+    <!-- Bottom connectors -->
+    <line x1="0" y1="920" x2="200" y2="920" class="hud-line" />
+    <line x1="200" y1="920" x2="240" y2="880" class="hud-line" />
+    <line x1="240" y1="880" x2="420" y2="880" class="hud-line" />
+
+    <line x1="1920" y1="960" x2="1700" y2="960" class="hud-line" />
+    <line x1="1700" y1="960" x2="1660" y2="920" class="hud-line" />
+    <line x1="1660" y1="920" x2="1500" y2="920" class="hud-line" />
+
+    <!-- Vertical accent lines -->
+    <line x1="160" y1="0" x2="160" y2="80" class="hud-line hud-line-dim" />
+    <line x1="1760" y1="0" x2="1760" y2="60" class="hud-line hud-line-dim" />
+    <line x1="100" y1="1000" x2="100" y2="1080" class="hud-line hud-line-dim" />
+    <line x1="1820" y1="1020" x2="1820" y2="1080" class="hud-line hud-line-dim" />
+
+    <!-- Cross-hair marks -->
+    <circle cx="280" cy="120" r="3" class="hud-node" />
+    <circle cx="1640" cy="100" r="3" class="hud-node" />
+    <circle cx="200" cy="920" r="3" class="hud-node" />
+    <circle cx="1700" cy="960" r="3" class="hud-node" />
+  </svg>
+
+  <!-- Floating crystal shapes -->
+  <div class="hud-crystal hud-crystal-1">
+    <svg viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 0 L40 25 L20 60 L0 25 Z" stroke="rgba(66,54,245,0.4)" stroke-width="1" fill="rgba(66,54,245,0.05)" />
+    </svg>
+  </div>
+  <div class="hud-crystal hud-crystal-2">
+    <svg viewBox="0 0 30 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 0 L30 18 L15 45 L0 18 Z" stroke="rgba(66,54,245,0.3)" stroke-width="1" fill="rgba(66,54,245,0.03)" />
+    </svg>
+  </div>
+  <div class="hud-crystal hud-crystal-3">
+    <svg viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0 L24 14 L12 36 L0 14 Z" stroke="rgba(100,140,255,0.25)" stroke-width="1" fill="rgba(100,140,255,0.02)" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  /* ═══ Scan Lines ═══ */
+  #scan-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(6, 10, 28, 0.12) 2px,
+      rgba(6, 10, 28, 0.12) 4px
+    );
+    mix-blend-mode: multiply;
+  }
+
+  /* ═══ HUD Overlay Container ═══ */
+  #hud-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* ═══ HUD Elements ═══ */
+  .hud-element {
+    position: absolute;
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.35;
+  }
+
+  .hud-top-left {
+    top: 100px;
+    left: 20px;
+  }
+
+  .hud-top-right {
+    top: 80px;
+    right: 20px;
+    text-align: right;
+  }
+
+  .hud-bottom-left {
+    bottom: 80px;
+    left: 20px;
+  }
+
+  .hud-bottom-right {
+    bottom: 40px;
+    right: 20px;
+    text-align: right;
+  }
+
+  .hud-data {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hud-label {
+    color: rgba(100, 140, 220, 0.7);
+  }
+
+  .hud-value {
+    color: rgba(180, 195, 240, 0.8);
+  }
+
+  .hud-accent {
+    color: rgba(66, 54, 245, 0.9);
+  }
+
+  /* ═══ Corner Brackets ═══ */
+  .hud-bracket-tl,
+  .hud-bracket-tr,
+  .hud-bracket-bl,
+  .hud-bracket-br {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: rgba(66, 54, 245, 0.35);
+    border-style: solid;
+  }
+
+  .hud-bracket-tl {
+    top: -6px;
+    left: -10px;
+    border-width: 1px 0 0 1px;
+  }
+
+  .hud-bracket-tr {
+    top: -6px;
+    right: -10px;
+    border-width: 1px 1px 0 0;
+  }
+
+  .hud-bracket-bl {
+    bottom: -6px;
+    left: -10px;
+    border-width: 0 0 1px 1px;
+  }
+
+  .hud-bracket-br {
+    bottom: -6px;
+    right: -10px;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* ═══ Blinking animation ═══ */
+  .hud-blink {
+    animation: hudBlink 2.5s ease-in-out infinite;
+  }
+
+  @keyframes hudBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ═══ SVG Lines ═══ */
+  .hud-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hud-line {
+    stroke: rgba(66, 54, 245, 0.18);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+    animation: drawLine 4s ease-out forwards;
+  }
+
+  .hud-line-dim {
+    stroke: rgba(66, 54, 245, 0.08);
+    animation-delay: 1s;
+  }
+
+  .hud-node {
+    fill: rgba(66, 54, 245, 0.3);
+    animation: nodePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes nodePulse {
+    0%, 100% { opacity: 0.3; r: 3; }
+    50% { opacity: 0.8; r: 4; }
+  }
+
+  /* ═══ Floating Crystals ═══ */
+  .hud-crystal {
+    position: absolute;
+    opacity: 0.4;
+    animation: crystalFloat 8s ease-in-out infinite;
+  }
+
+  .hud-crystal-1 {
+    top: 8%;
+    right: 15%;
+    width: 35px;
+    animation-duration: 10s;
+    transform: rotate(15deg);
+  }
+
+  .hud-crystal-2 {
+    top: 25%;
+    left: 8%;
+    width: 22px;
+    animation-duration: 12s;
+    animation-delay: 2s;
+    transform: rotate(-10deg);
+  }
+
+  .hud-crystal-3 {
+    top: 15%;
+    right: 30%;
+    width: 18px;
+    animation-duration: 9s;
+    animation-delay: 4s;
+    transform: rotate(25deg);
+  }
+
+  @keyframes crystalFloat {
+    0%, 100% { transform: translateY(0) rotate(15deg); }
+    33% { transform: translateY(-12px) rotate(20deg); }
+    66% { transform: translateY(8px) rotate(10deg); }
+  }
+
+  /* ═══ Responsive: hide HUD on mobile ═══ */
+  @media (max-width: 768px) {
+    .hud-element {
+      display: none;
+    }
+    .hud-lines {
+      display: none;
+    }
+    .hud-crystal {
+      display: none;
+    }
+    #scan-lines {
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(6, 10, 28, 0.08) 3px,
+        rgba(6, 10, 28, 0.08) 6px
+      );
+    }
+  }
+</style>

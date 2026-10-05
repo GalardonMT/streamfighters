@@ -1,0 +1,1115 @@
+/* src/styles/boxeadores.css */
+
+/* ============================
+   LAYOUT PRINCIPAL
+   ============================ */
+
+.roster-wrapper {
+  background-color: #060A1A;
+}
+
+/* ============================
+   ESCENARIO SUPERIOR
+   ============================ */
+
+.stage-area {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) auto minmax(180px, 1.1fr);
+  align-items: end;
+  gap: 1.5rem;
+  padding: 1.75rem 1.75rem 0;
+  min-height: 420px;
+  position: relative;
+  background-color: #080512;
+  background-image:
+    radial-gradient(ellipse at 50% 65%, rgba(66, 54, 245, 0.32) 0%, rgba(8, 5, 18, 0.98) 75%),
+    radial-gradient(circle at 50% 100%, rgba(192, 132, 252, 0.22) 0%, transparent 60%),
+    linear-gradient(to right, rgba(147, 51, 234, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 51, 234, 0.18) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Cinta / Marca de agua tipográfica infinita en constante movimiento hacia la izquierda */
+.stage-watermark-conveyor {
+  position: absolute;
+  top: 48%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  display: flex;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  white-space: nowrap;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.watermark-track {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transform: translateX(0);
+  will-change: transform;
+}
+
+/* Solo se mueve cuando se le da click al boxeador */
+.stage-watermark-conveyor.is-moving .watermark-track {
+  animation: continuousTapeScroll 16s linear infinite;
+}
+
+@keyframes continuousTapeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.watermark-item {
+  font-family: 'Teko', sans-serif;
+  font-size: clamp(6.5rem, 15vw, 14rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: rgba(235, 235, 244, 0.075);
+  letter-spacing: 0.08em;
+  line-height: 0.85;
+  text-shadow: 0 0 60px rgba(192, 132, 252, 0.2), 0 0 100px rgba(66, 54, 245, 0.16);
+  -webkit-text-stroke: 1.5px rgba(192, 132, 252, 0.14);
+  transition: color 0.3s ease;
+  padding: 0 2.75rem;
+}
+
+/* Flash de impulso acelerado en la cinta al hacer click */
+.stage-watermark-conveyor.conveyor-boost {
+  filter: drop-shadow(0 0 25px rgba(192, 132, 252, 0.4));
+  transition: filter 0.4s ease;
+}
+
+/* Stats izquierda */
+.stage-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 3;
+}
+
+.stage-stat-name {
+  font-family: 'Teko', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #EBEBF4;
+  letter-spacing: 0.05em;
+  line-height: 0.95;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Animación de cinta en el nombre principal cuando se selecciona */
+.stage-stat-name.name-conveyor {
+  animation: nameTapeSlide 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes nameTapeSlide {
+  0% {
+    opacity: 0.8;
+    transform: translateX(0);
+  }
+  36% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  37% {
+    opacity: 0;
+    transform: translateX(80%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.stage-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  position: relative;
+}
+
+.stage-stat-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #B58E7D;
+  font-weight: 800;
+}
+
+.stage-stat-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #EBEBF4;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Animaciones Stagger para los datos del peleador (lateral izquierdo) */
+.stagger-item {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stage-stats.animating .stagger-item {
+  animation: statSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stage-stats.animating .stagger-item:nth-child(1) {
+  animation-delay: 0.03s;
+}
+
+.stage-stats.animating .stagger-item:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.stage-stats.animating .stagger-item:nth-child(3) {
+  animation-delay: 0.13s;
+}
+
+.stage-stats.animating .stagger-item:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.stage-stats.animating .stagger-item:nth-child(5) {
+  animation-delay: 0.23s;
+}
+
+.stage-stats.animating .stagger-item:nth-child(6) {
+  animation-delay: 0.28s;
+}
+
+@keyframes statSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-28px);
+    filter: blur(4px);
+  }
+
+  70% {
+    filter: blur(0px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0px);
+  }
+}
+
+/* Figura del personaje (PNG) central - Render Fighting Game */
+.stage-character {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  width: 320px;
+  height: 390px;
+  flex-shrink: 0;
+  z-index: 2;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1), height 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modo Expandido: Foto Completa del Boxeador con fondo ampliado y estadísticas nítidas */
+.stage-area.character-expanded {
+  min-height: 640px;
+  padding-top: 2.25rem;
+  transition: min-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), padding 0.45s ease;
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+}
+
+.stage-area.character-expanded .stage-character {
+  width: min(580px, 92vw);
+  height: 600px;
+  z-index: 20;
+}
+
+.stage-area.character-expanded .stage-char-glow {
+  width: 520px;
+  height: 520px;
+  filter: blur(45px);
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.7) 0%, rgba(66, 54, 245, 0.5) 45%, transparent 75%);
+}
+
+.stage-area.character-expanded .stage-character img {
+  height: 580px;
+  max-height: 580px;
+  filter: drop-shadow(0 -15px 55px rgba(112, 51, 255, 0.8)) drop-shadow(0 8px 30px rgba(0, 0, 0, 0.95));
+  animation: fighterFullViewPulse 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.stage-area.character-expanded .stage-character-mystery {
+  height: 580px;
+}
+
+/* Mantener las estadísticas e información 100% visibles y destacadas en modo expandido */
+.stage-area.character-expanded .stage-stats,
+.stage-area.character-expanded .stage-info {
+  opacity: 1;
+  filter: none;
+  z-index: 25;
+  transition: opacity 0.3s ease;
+}
+
+.stage-area.character-expanded .stage-stat-name {
+  font-size: 3.6rem;
+}
+
+.stage-area.character-expanded .stage-country-name {
+  font-size: 3.2rem;
+}
+
+@keyframes fighterFullViewPulse {
+  0% {
+    transform: scale(0.92);
+    filter: brightness(1.8) drop-shadow(0 0 40px #ffffff);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 -12px 50px rgba(112, 51, 255, 0.7)) drop-shadow(0 6px 25px rgba(0, 0, 0, 0.9));
+  }
+}
+
+/* Botones de acción del Stage (Expandir / Volver) */
+.stage-action-btn {
+  position: absolute;
+  bottom: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  z-index: 25;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.stage-action-btn.expand-btn {
+  background-color: rgba(28, 17, 50, 0.92);
+  color: #EBEBF4;
+  border: 1px solid rgba(192, 132, 252, 0.5);
+}
+
+.stage-action-btn.expand-btn:hover {
+  background-color: #4236F5;
+  border-color: #ffffff;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(112, 51, 255, 0.8);
+}
+
+.stage-action-btn.collapse-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: auto;
+  right: auto;
+  background: rgba(18, 11, 28, 0.92);
+  color: #EBEBF4;
+  border: 1px solid rgba(181, 142, 125, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(66, 54, 245, 0.25);
+  padding: 0.45rem 1.15rem;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  z-index: 30;
+  backdrop-filter: blur(10px);
+}
+
+.stage-action-btn.collapse-btn:hover {
+  background: #1c1132;
+  color: #ffffff;
+  border-color: #c084fc;
+  transform: translateX(-50%) translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.9), 0 0 16px rgba(192, 132, 252, 0.45);
+}
+
+/* Destello luminoso tras el boxeador (spotlight fighting game) */
+.stage-char-glow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.45) 0%, rgba(66, 54, 245, 0.25) 40%, transparent 70%);
+  pointer-events: none;
+  filter: blur(20px);
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Flash de impacto al cambiar de peleador */
+.stage-impact-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.8) 0%, rgba(192, 132, 252, 0.5) 30%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.stage-impact-flash.impact-active {
+  animation: fighterImpactFlash 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fighterImpactFlash {
+  0% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+
+  40% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+.stage-character img {
+  width: 100%;
+  height: 380px;
+  max-height: 380px;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 -10px 35px rgba(112, 51, 255, 0.55)) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.8));
+  transform-origin: bottom center;
+  position: relative;
+  z-index: 2;
+  transition: filter 0.25s ease;
+}
+
+/* Animación de entrada arcade para el boxeador: golpe de zoom + settling con inercia */
+.stage-character.fighter-enter img {
+  animation: fighterArcadeEnter 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+@keyframes fighterArcadeEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(24px);
+    filter: brightness(2.4) contrast(1.3) drop-shadow(0 0 50px #ffffff);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1.06) translateY(-4px);
+    filter: brightness(1.35) drop-shadow(0 -8px 45px rgba(192, 132, 252, 0.85));
+  }
+
+  75% {
+    transform: scale(0.985) translateY(1px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 -10px 35px rgba(112, 51, 255, 0.55)) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.8));
+  }
+}
+
+.stage-character-mystery {
+  width: 320px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.stage-character.fighter-enter .stage-character-mystery {
+  animation: fighterArcadeEnter 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+.stage-mystery-big-q {
+  font-family: 'Teko', sans-serif;
+  font-size: 11rem;
+  font-weight: 900;
+  color: #EBEBF4;
+  line-height: 1;
+  text-shadow: 0 0 35px rgba(112, 51, 255, 0.95);
+  user-select: none;
+}
+
+/* Info derecha */
+.stage-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 3;
+}
+
+.stage-info.animating {
+  animation: infoSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes infoSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(25px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.stage-country-name {
+  font-family: 'Teko', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #EBEBF4;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: right;
+  text-shadow: 0 0 20px rgba(66, 54, 245, 0.4);
+}
+
+.stage-flag {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
+}
+
+.stage-flag .flag-svg {
+  width: 52px;
+  height: 35px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  object-fit: cover;
+}
+
+.stage-flag .flag-svg-incognito,
+#modal-fighter-flag .flag-svg-incognito {
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #1C1132;
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  color: #c084fc;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+#modal-fighter-flag .flag-svg {
+  width: 36px;
+  height: 25px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.stage-badge {
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #EBEBF4;
+  background-color: #4236F5;
+  border: 1px solid #4236F5;
+  padding: 0.3rem 0.75rem;
+}
+
+.stage-badge.secret {
+  background-color: transparent;
+  border-color: rgba(181, 142, 125, 0.4);
+  color: #B58E7D;
+}
+
+/* ============================
+   SEPARADOR / BASE DEL STAGE
+   ============================ */
+
+.stage-base {
+  height: 6px;
+  background: linear-gradient(90deg, transparent 0%, #4236F5 30%, #7033ff 50%, #4236F5 70%, transparent 100%);
+  margin-bottom: 0;
+  box-shadow: 0 0 18px rgba(112, 51, 255, 0.7);
+}
+
+/* ============================
+   PANEL DE SELECCIÓN (CUADRÍCULA)
+   ============================ */
+
+.roster-panel {
+  background: linear-gradient(180deg, #1C1132 0%, #0e0920 100%);
+  padding: 1.75rem 1.5rem 1.5rem;
+  position: relative;
+}
+
+/* Scroll horizontal en mobile */
+.roster-scroll {
+  overflow-x: auto;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Filas */
+.roster-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.roster-row+.roster-row {
+  margin-top: 8px;
+}
+
+/* ==== CASILLAS ==== */
+
+/* Outer shell cuadrado con borde gris oscuro - tamaño ampliado */
+.roster-slot {
+  width: 82px;
+  height: 98px;
+  flex-shrink: 0;
+  background-color: #0d0b19;
+  border: 2px solid #302050;
+  padding: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Boxeador en hover o seleccionado: ¡MÁXIMA ILUMINACIÓN Y PROTAGONISMO! */
+.roster-slot:hover,
+.roster-slot.is-hovered-fighter,
+.roster-slot.active {
+  border-color: #5546FF !important;
+  transform: scale(1.1) translateY(-3px) !important;
+  z-index: 30 !important;
+  box-shadow:
+    0 0 25px rgba(66, 54, 245, 0.95),
+    0 0 45px rgba(66, 54, 245, 0.6),
+    inset 0 0 15px rgba(66, 54, 245, 0.9) !important;
+}
+
+.roster-slot:hover .roster-slot-inner,
+.roster-slot.is-hovered-fighter .roster-slot-inner,
+.roster-slot.active .roster-slot-inner {
+  border-color: #FFFFFF !important;
+  box-shadow:
+    inset 0 0 20px rgba(66, 54, 245, 0.95),
+    0 0 18px rgba(85, 70, 255, 0.8) !important;
+  background-color: #120A2E !important;
+}
+
+.roster-slot:hover .roster-slot-img,
+.roster-slot.is-hovered-fighter .roster-slot-img,
+.roster-slot.active .roster-slot-img {
+  filter: brightness(1.3) contrast(1.15) drop-shadow(0 0 10px rgba(66, 54, 245, 0.8)) !important;
+}
+
+/* Inner con neón morado por defecto */
+.roster-slot-inner {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #5b21b6;
+  box-shadow:
+    inset 0 0 12px rgba(91, 33, 182, 0.8),
+    0 0 6px rgba(91, 33, 182, 0.5);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #0a0715;
+}
+
+/* Bloqueo del selector inferior cuando un boxeador está seleccionado en vista completa */
+.roster-panel.roster-locked {
+  position: relative;
+  user-select: none;
+}
+
+.roster-panel.roster-locked .roster-slot:not(.slot-locked) {
+  opacity: 0.35;
+  filter: grayscale(0.5) brightness(0.6);
+  pointer-events: none;
+  cursor: not-allowed;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Casilla seleccionada */
+.roster-slot.slot-locked {
+  border-color: #5546FF !important;
+  transform: scale(1.08) !important;
+  z-index: 25 !important;
+  box-shadow: 0 0 25px rgba(66, 54, 245, 0.95), 0 0 35px rgba(66, 54, 245, 0.5) !important;
+}
+
+.roster-slot.slot-locked .roster-slot-inner {
+  border-color: #FFFFFF !important;
+  position: relative;
+  box-shadow: inset 0 0 16px rgba(66, 54, 245, 0.9) !important;
+}
+
+/* Sutil animación de pulso y resplandor exterior para la casilla seleccionada con la X */
+.roster-slot.active::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid rgba(85, 70, 255, 0.8);
+  pointer-events: none;
+  border-radius: 4px;
+  animation: slotActiveSubtleGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes slotActiveSubtleGlow {
+  0% {
+    opacity: 0.6;
+    border-color: rgba(66, 54, 245, 0.5);
+    box-shadow: 0 0 10px rgba(66, 54, 245, 0.4);
+  }
+  100% {
+    opacity: 1;
+    border-color: rgba(85, 70, 255, 1);
+    box-shadow: 0 0 25px rgba(85, 70, 255, 0.85);
+  }
+}
+
+/* Casilla del contrincante / oponente: ILUMINACIÓN SECUNDARIA Y MÁS TENUE QUE EL SELECCIONADO */
+.roster-slot.opponent {
+  border-color: rgba(181, 142, 125, 0.5) !important;
+  z-index: 8 !important;
+  transform: scale(1.01) !important;
+  box-shadow: 0 0 8px rgba(181, 142, 125, 0.25) !important;
+}
+
+.roster-slot.opponent .roster-slot-inner {
+  border-color: rgba(181, 142, 125, 0.4) !important;
+  box-shadow:
+    inset 0 0 8px rgba(181, 142, 125, 0.25),
+    0 0 6px rgba(181, 142, 125, 0.2) !important;
+  background-color: #0d091a !important;
+}
+
+.roster-slot.opponent .roster-slot-img {
+  opacity: 0.75 !important;
+  filter: brightness(0.85) grayscale(0.2) !important;
+}
+
+.roster-slot.opponent::after {
+  content: 'VS';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: rgba(181, 142, 125, 0.85);
+  color: #060A1A;
+  font-family: 'Teko', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 6px rgba(181, 142, 125, 0.4);
+  z-index: 12;
+}
+
+/* Casilla del compañero de equipo iluminada en blanco casi rosa pastel */
+.roster-slot.teammate {
+  border-color: #ffd6e0;
+  z-index: 9;
+  transform: scale(1.03);
+  box-shadow: 0 0 16px rgba(255, 214, 224, 0.65), 0 0 6px rgba(255, 241, 245, 0.5);
+}
+
+.roster-slot.teammate .roster-slot-inner {
+  border-color: #fff1f5;
+  box-shadow:
+    inset 0 0 16px rgba(255, 214, 224, 0.8),
+    0 0 12px rgba(255, 241, 245, 0.7);
+}
+
+.roster-slot.teammate::after {
+  content: 'EQUIPO';
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  background-color: #fff1f5;
+  color: #1a0814;
+  font-family: 'Teko', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 10px rgba(255, 214, 224, 0.95);
+  border: 1px solid #ffd6e0;
+  z-index: 12;
+}
+
+/* Imagen del boxeador dentro de la casilla */
+.roster-slot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Casilla misteriosa con "?" */
+.slot-mystery {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #0d091e;
+  background-image:
+    linear-gradient(to right, rgba(112, 51, 255, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(112, 51, 255, 0.25) 1px, transparent 1px);
+  background-size: 10px 10px;
+  user-select: none;
+}
+
+.slot-mystery-q {
+  font-family: 'Teko', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #EBEBF4;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(112, 51, 255, 0.9);
+  position: relative;
+  z-index: 1;
+}
+
+/* Marca de agua "5" */
+.slot-mystery-wm {
+  position: absolute;
+  font-family: 'Teko', sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(91, 33, 182, 0.2);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ============================
+   TARJETAS INDIVIDUALES (FICHAS)
+   ============================ */
+
+/* Botones de filtro rápido de peleadores */
+.fighters-filter-carousel {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+  max-width: 100%;
+}
+
+.fighters-filter-scroll-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+  padding: 0.15rem 0.25rem;
+}
+
+.fighters-filter-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+.filter-carousel-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background-color: #1C1132;
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  color: #EBEBF4;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.filter-carousel-nav-btn:hover {
+  background-color: #4236F5;
+  border-color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(66, 54, 245, 0.7);
+}
+
+.filter-carousel-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.fighter-filter-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background-color: #0d091e;
+  color: #B58E7D;
+  border: 1px solid rgba(181, 142, 125, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.fighter-filter-btn:hover {
+  color: #EBEBF4;
+  border-color: #8b5cf6;
+  background-color: #1c1132;
+  transform: translateY(-1px);
+}
+
+.fighter-filter-btn.active {
+  background-color: #4236F5;
+  color: #ffffff;
+  border-color: #c084fc;
+  box-shadow: 0 0 12px rgba(66, 54, 245, 0.6);
+}
+
+.boxeador-card {
+  background-color: #1C1132;
+  border: 1px solid rgba(181, 142, 125, 0.25);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.boxeador-card:hover {
+  border-color: #8b5cf6;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.7);
+}
+
+.boxeador-img-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 3px solid #0d0b19;
+  padding: 3px;
+  background-color: #0a0715;
+  position: relative;
+}
+
+.boxeador-img-inner {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #5b21b6;
+  box-shadow: inset 0 0 14px rgba(91, 33, 182, 0.7);
+  overflow: hidden;
+  position: relative;
+}
+
+.boxeador-img-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.6s ease;
+}
+
+.boxeador-card:hover .boxeador-img-inner img {
+  transform: scale(1.07);
+}
+
+.boxeador-card-body {
+  padding: 0.75rem;
+}
+
+.boxeador-tag-country {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 0.15rem 0.5rem;
+  background-color: rgba(8, 7, 13, 0.85);
+  border: 1px solid rgba(181, 142, 125, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+}
+
+.boxeador-tag-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.55rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #EBEBF4;
+  background-color: #4236F5;
+  padding: 0.2rem 0.5rem;
+  box-shadow: 0 0 8px rgba(112, 51, 255, 0.7);
+}
+
+.boxeador-stat-badge {
+  background-color: #060A1A;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(181, 142, 125, 0.15);
+  text-align: center;
+}
+
+/* ============================
+   MODAL / FICHA COMPLETA DE BOXEADOR
+   ============================ */
+
+.fighter-detail-modal {
+  padding: 0;
+  border-radius: 1.25rem;
+  background-color: #0d091e;
+  border: 2px solid #5b21b6;
+  box-shadow: 0 0 50px rgba(66, 54, 245, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+  max-width: 820px;
+  width: 95%;
+  color: #EBEBF4;
+  margin: auto;
+}
+
+.fighter-detail-modal::backdrop {
+  background-color: rgba(8, 7, 13, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.fighter-modal-grid-bg {
+  background-color: #090614;
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(66, 54, 245, 0.25) 0%, rgba(9, 6, 20, 0.95) 75%),
+    linear-gradient(to right, rgba(147, 51, 234, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 51, 234, 0.2) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* ============================
+   RESPONSIVE ARCADE STAGE
+   ============================ */
+
+@media (max-width: 768px) {
+  .stage-area {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    padding: 1.25rem 1rem 0;
+    min-height: 380px;
+    gap: 1rem;
+  }
+
+  .stage-character {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    height: 300px;
+    width: 100%;
+  }
+
+  .stage-character img,
+  .stage-character-mystery {
+    height: 300px;
+    max-height: 300px;
+  }
+
+  .stage-stats {
+    grid-column: 1;
+    grid-row: 2;
+    padding-bottom: 1rem;
+  }
+
+  .stage-info {
+    grid-column: 2;
+    grid-row: 2;
+    padding-bottom: 1rem;
+  }
+
+  .stage-stat-name {
+    font-size: 2.2rem;
+  }
+
+  .stage-country-name {
+    font-size: 2rem;
+  }
+
+  .stage-watermark {
+    font-size: clamp(4rem, 20vw, 7rem);
+    top: 35%;
+  }
+
+  .stage-area.character-expanded {
+    min-height: 480px;
+  }
+
+  .stage-area.character-expanded .stage-character {
+    height: 420px;
+    width: 100%;
+  }
+
+  .stage-area.character-expanded .stage-character img,
+  .stage-area.character-expanded .stage-character-mystery {
+    height: 400px;
+    max-height: 400px;
+  }
+
+  .roster-slot {
+    width: 74px;
+    height: 90px;
+  }
+}

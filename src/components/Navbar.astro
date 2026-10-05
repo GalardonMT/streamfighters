@@ -1,0 +1,234 @@
+---
+// src/components/Navbar.astro
+interface Props {
+  currentPage?: "inicio" | "combates";
+}
+
+const { currentPage = "inicio" } = Astro.props;
+---
+
+<header
+  class="sticky top-0 z-50 bg-[#060A1A]/90 backdrop-blur-xl border-b border-[#B58E7D]/20 transition-all duration-300 shadow-lg shadow-black/40"
+>
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4"
+  >
+    <!-- Brand / Logo -> Tocar el logo o nombre redirige a la página principal "/" -->
+    <a
+      href="/"
+      class="flex items-center gap-3 group cursor-pointer select-none focus:outline-none active:scale-[0.97] transition-all duration-200"
+      title="Ir a la página principal de Stream Fighters V"
+      aria-label="Stream Fighters V - Página Principal"
+    >
+      <div class="relative flex items-center justify-center">
+        <img
+          src="/images/logo2.png"
+          alt="Stream Fighters V"
+          class="h-10 sm:h-12 w-auto object-contain group-hover:scale-105 group-active:scale-95 group-hover:drop-shadow-[0_0_10px_rgba(66,54,245,0.55)] transition-all duration-300 ease-out"
+        />
+        <!-- Sutil brillo difuso minimalista detrás del emblema -->
+        <div
+          class="absolute inset-0 bg-[#4236F5]/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 group-active:opacity-80 transition-opacity duration-300 pointer-events-none"
+        >
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <span
+          class="font-display text-2xl sm:text-3xl font-extrabold tracking-wider text-[#EBEBF4] leading-none group-hover:text-white transition-colors duration-200"
+        >
+          STREAM FIGHTERS <span
+            class="text-[#4236F5] transition-all duration-300 group-hover:text-[#5d4eff] group-hover:drop-shadow-[0_0_8px_rgba(66,54,245,0.8)]">V</span
+          >
+        </span>
+        <div class="flex items-center gap-2">
+          <span
+            class="text-[10px] uppercase tracking-widest text-[#B58E7D] font-bold group-hover:text-[#cbb0a3] transition-colors duration-200"
+          >
+            Noche de Campeonato
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Center Navigation Links (Desktop) -->
+
+    <!-- Right Call to Action -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="hidden xl:flex flex-col text-right">
+        <span
+          class="text-[11px] text-[#B58E7D] uppercase font-bold tracking-wider"
+          >14 NOV 2026</span
+        >
+        <span class="text-[11px] text-[#EBEBF4] font-medium"
+          >COLISEO MEDPLUS</span
+        >
+      </div>
+
+      <!-- Quick Link to Kick -->
+      <a
+        href="https://kick.com/westcol"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden sm:inline-flex items-center gap-1.5 bg-[#53FC18]/15 hover:bg-[#53FC18] text-[#53FC18] hover:text-[#060A1A] border border-[#53FC18]/50 text-xs font-black uppercase tracking-wider py-2 px-3.5 rounded-lg transition-all duration-200"
+        title="Canal oficial de WestCol en Kick"
+      >
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <path d="M3 3h5v6h3V6h3V3h7v6h-3v3h-3v3h3v3h3v6h-7v-3h-3v-3H8v6H3V3z"
+          ></path>
+        </svg>
+        <span>WestCol</span>
+      </a>
+
+      <!-- Entradas Button -->
+      <a
+        href="https://www.taquillalive.com/performance-details/?artist=westcol&event=TCL.EVN1440.PRF1"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-[#4236F5] hover:bg-[#3227d8] text-[#EBEBF4] text-xs sm:text-sm font-bold uppercase tracking-wider py-2 sm:py-2.5 px-3.5 sm:px-5 rounded-lg shadow-md shadow-black/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-1.5 sm:gap-2 border border-[#5546FF]/50"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+          ></path>
+        </svg>
+        <span>Entradas</span>
+      </a>
+
+      <!-- Mobile Menu Toggle Button -->
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        aria-label="Abrir Menú de Navegación"
+        class="md:hidden p-2 rounded-lg bg-[#1C1132] border border-[#B58E7D]/30 text-[#EBEBF4] hover:text-[#4236F5] transition-colors focus:outline-none"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            id="menu-icon-bars"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16m-7 6h7"></path>
+          <path
+            id="menu-icon-close"
+            class="hidden"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden border-t border-[#B58E7D]/20 bg-[#060A1A]/98 backdrop-blur-2xl px-4 py-4 space-y-2 transition-all duration-300"
+  >
+    <a
+      href="/"
+      class={`block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider ${
+        currentPage === "inicio"
+          ? "bg-[#4236F5]/20 text-[#EBEBF4] border border-[#4236F5]"
+          : "text-[#B58E7D] hover:bg-[#1C1132] hover:text-[#EBEBF4]"
+      }`}
+    >
+      🏠 Inicio (Principal)
+    </a>
+
+    <a
+      href="/combates"
+      class={`block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider ${
+        currentPage === "combates"
+          ? "bg-[#4236F5]/20 text-[#EBEBF4] border border-[#4236F5]"
+          : "text-[#B58E7D] hover:bg-[#1C1132] hover:text-[#EBEBF4]"
+      }`}
+    >
+      🥊 Cartelera de Combates & Artistas
+    </a>
+
+    <a
+      href="/#transmision"
+      class="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider text-[#53FC18] hover:bg-[#53FC18]/10 border border-[#53FC18]/30"
+    >
+      🟢 Transmisión WestCol en Kick
+    </a>
+
+    <a
+      href="/#informacion"
+      class="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider text-[#B58E7D] hover:bg-[#1C1132] hover:text-[#EBEBF4]"
+    >
+      📋 Información Oficial
+    </a>
+
+    <a
+      href="/#patrocinios"
+      class="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider text-[#B58E7D] hover:bg-[#1C1132] hover:text-[#EBEBF4]"
+    >
+      🤝 Patrocinadores Oficiales
+    </a>
+
+    <a
+      href="/#ubicacion"
+      class="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider text-[#B58E7D] hover:bg-[#1C1132] hover:text-[#EBEBF4]"
+    >
+      📍 Ubicación & Coliseo
+    </a>
+
+    <a
+      href="https://kick.com/westcol"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block px-4 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-[#53FC18]/20 text-[#53FC18] text-center mt-2 border border-[#53FC18]"
+    >
+      📺 Abrir Kick.com/WestCol
+    </a>
+  </div>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("mobile-menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      const barsIcon = document.getElementById("menu-icon-bars");
+      const closeIcon = document.getElementById("menu-icon-close");
+
+      if (toggle && menu) {
+        toggle.addEventListener("click", () => {
+          const isHidden = menu.classList.contains("hidden");
+          if (isHidden) {
+            menu.classList.remove("hidden");
+            barsIcon?.classList.add("hidden");
+            closeIcon?.classList.remove("hidden");
+          } else {
+            menu.classList.add("hidden");
+            barsIcon?.classList.remove("hidden");
+            closeIcon?.classList.add("hidden");
+          }
+        });
+
+        // Close menu when clicking on mobile links
+        menu.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            menu.classList.add("hidden");
+            barsIcon?.classList.remove("hidden");
+            closeIcon?.classList.add("hidden");
+          });
+        });
+      }
+    });
+  </script>
+</header>
