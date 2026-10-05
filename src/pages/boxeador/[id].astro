@@ -220,19 +220,6 @@ const teammateNames = teammates.map((t) => t.nickname).join(" & ");
           <div
             class="hero-content-enter lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left z-30 order-1 lg:order-2"
           >
-            <!-- Logo Oficial y Kicker HUD -->
-            <div class="flex items-center gap-3 mb-3">
-              <img
-                src="/images/logo2.png"
-                alt="Stream Fighters V"
-                class="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_4px_16px_rgba(66,54,245,0.6)]"
-              />
-              <span
-                class="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#B58E7D] bg-[#060A1A]/80 px-3 py-1 rounded-lg border border-[#B58E7D]/30 backdrop-blur-md"
-              >
-                ROSTER OFICIAL // ATLETA SF5
-              </span>
-            </div>
 
             <!-- País y Badge -->
             <div class="flex items-center gap-2 mb-2">
@@ -245,11 +232,6 @@ const teammateNames = teammates.map((t) => t.nickname).join(" & ");
                 class="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#B58E7D]"
               >
                 {fighter.country}
-              </span>
-              <span
-                class="text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#4236F5]/30 border border-[#4236F5] text-[#EBEBF4] ml-1"
-              >
-                {fighter.badge || "CONFIRMADO"}
               </span>
             </div>
 
@@ -311,18 +293,6 @@ const teammateNames = teammates.map((t) => t.nickname).join(" & ");
                 <span>📊 Ver Ficha Técnica</span>
               </a>
 
-              {fighter.socials?.kick && (
-                <a
-                  href={`https://kick.com/${fighter.socials.kick}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl bg-[#53FC18]/15 border border-[#53FC18]/50 text-[#53FC18] text-xs font-black uppercase tracking-wider hover:bg-[#53FC18] hover:text-[#060A1A] transition-all shadow-md hover:scale-105 active:scale-95"
-                  title="Ver canal en Kick"
-                >
-                  <span class="w-2 h-2 rounded-full bg-[#53FC18] animate-ping"></span>
-                  <span>KICK</span>
-                </a>
-              )}
             </div>
           </div>
         </div>
@@ -478,58 +448,6 @@ const teammateNames = teammates.map((t) => t.nickname).join(" & ");
                 </span>
               </div>
 
-              <div
-                class="flex items-center justify-between py-2 border-b border-[#B58E7D]/10"
-              >
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
-                  >SEDE DEL EVENTO</span
-                >
-                <span class="text-white font-bold text-right"
-                  >Coliseo MedPlus • Bogotá, Colombia</span
-                >
-              </div>
-
-              <!-- Redes Sociales / Canales de Transmisión -->
-              <div class="flex items-center justify-between py-2">
-                <span class="text-[#B58E7D] uppercase font-mono text-xs tracking-wider"
-                  >REDES Y TRANSMISIÓN</span
-                >
-                <div class="flex items-center gap-2">
-                  {fighter.socials?.kick && (
-                    <a
-                      href={`https://kick.com/${fighter.socials.kick}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-[#53FC18] font-bold text-xs hover:underline flex items-center gap-1 bg-[#53FC18]/10 border border-[#53FC18]/30 px-2 py-0.5 rounded"
-                    >
-                      <span>Kick: @{fighter.socials.kick}</span>
-                    </a>
-                  )}
-                  {fighter.socials?.instagram && (
-                    <a
-                      href={`https://instagram.com/${fighter.socials.instagram}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-[#E1306C] font-bold text-xs hover:underline flex items-center gap-1 bg-[#E1306C]/10 border border-[#E1306C]/30 px-2 py-0.5 rounded"
-                    >
-                      <span>IG: @{fighter.socials.instagram}</span>
-                    </a>
-                  )}
-                  {fighter.socials?.twitch && (
-                    <a
-                      href={`https://twitch.tv/${fighter.socials.twitch}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-[#9146FF] font-bold text-xs hover:underline flex items-center gap-1 bg-[#9146FF]/10 border border-[#9146FF]/30 px-2 py-0.5 rounded"
-                    >
-                      <span>Twitch: @{fighter.socials.twitch}</span>
-                    </a>
-                  )}
-                  {!fighter.socials && (
-                    <span class="text-[#B58E7D]/70 italic text-xs">Confirmado en Stream Fighters V</span>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
         </div>
